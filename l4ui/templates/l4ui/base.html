@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8"/>
+    <title>
+       L4 UI
+    </title>
+    <link href="/static/style.css" rel="stylesheet" type="text/css">
+</head>
+<script src="/static/js/jquery/1.11.3/jquery.min.js"></script>
+
+<!-- Navigation -->
+
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">L4 UI</a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li>
+		            <a href="/" title="L4 생성">L4 생성</a>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
+
+                    {% if session.id %}
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">{{ session.id }} <b class="caret"></b></a>
+		    {% else %}
+		    <a href="{% url 'login' %}"> login </a>
+                    {% endif %}
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="/logout"><i class="icon-pencil fa-fw"></i> logout</a>
+                        </li>
+                    </ul>
+
+                </li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+
+{% block content %}
+{% endblock %}
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 footer-left">
+            </div>
+                <div id="lay_footer">
+                <div class="footer_wrap">
+                    <div class="left_wrap">
+                        <div class="logo"><img src="/static/img/h1_sk_planet.png">
+                            <address>
+                                SK planet 구성원을 위한 사내 시스템입니다. 불법으로 사용시에는 법적 제재를 받을 수 있습니다.
+                                <br>
+                                COPYRIGHTS 2016 SK PLANET. ALL RIGHTS RESERVED.
+                            </address>
+                        </div>
+                    </div>
+                    <!-- 회사별 로고 슬라이드 영역 -->
+                </div>
+            </div>
+            </div>
+    </div>
+</footer>
+
+<!-- Modal -->
+
+<div class="modal fade" id="ipModal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h2 class="modal-title" id="searchModalLabel">ALL IP List</h2>
+                </div>
+                <div id="ipModal-body" class="modal-body">
+                    <!--
+                    <form action="get" id="site_search">
+                        <div class="input-group">
+                            <input class="form-control" type="text" id="search_box">
+                            <span class="input-group-btn">
+                            <button class="btn btn-primary" type="submit">Search</button>
+                            </span>
+                        </div>
+                    </form>
+                    <ul style="display: block; margin-top: 15px;" id="search_results"></ul>
+                    -->
+                </div>
+                <div class="modal-footer">
+		            <button id="ipModal-close" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+    </div>
+</div>
+
+
+<script src="/static/js/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+
+</html>
