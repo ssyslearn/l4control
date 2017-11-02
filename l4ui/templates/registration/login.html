@@ -22,26 +22,54 @@
     <!-- Bootstrap Core JS -->
 	<script src="/static/js/bootstrap/3.3.0/js/bootstrap.min.js"></script>
 </head>
-
-
 <body>
 	<section class="container">
-		{% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
-	    <section class="login-form">
-		<form method="post" action="{% url 'login' %}" role="login">
-            {% csrf_token %}
-			<div>
-				<img src="/static/img/h1_sk_planet.png" alt="" />
-				<h4>Login to L4 device controller</h4>
-			</div>
-			<input type="id" name="id" placeholder="아이디" required class="form-control input-lg" />
-			<input type="password" name="password" placeholder="패스워드" required class="form-control input-lg" />
-			<button type="submit" name="go" class="btn btn-lg btn-block btn-info">Sign in</button>
-			<div>
-				<a href="#">Create account</a> or <a href="#">reset password</a>
-			</div>
-		</form>
-		</section>
+              <!-- 로그인 되어있는 경우 -->
+        {% if user.is_active %}
+          <h2> Welcome, {{user.username}} </h2>
+          <a href="{% url 'logout' %}">로그아웃</a>
+
+          <!-- 로그인 되어있지 않은 경우 -->
+        {% else %}
+        {% if form.errors %}
+            <!-- 에러발생시 -->
+            <p>ID나 비밀번호가 일치하지 않습니다.</p>
+        {% endif %}
+
+                <!--
+            <form method="post" action="{% url 'login' %}" role="login">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="" />
+                <input type="id" name="id" placeholder="아이디" required class="form-control input-lg" />
+                <input type="password" name="password" placeholder="패스워드" required class="form-control input-lg" />
+                <button type="submit" name="go" class="btn btn-lg btn-block btn-info">Sign in</button>
+                <div>
+                    <a href="#">Create account</a> or <a href="#">reset password</a>
+                </div>
+            </form>
+            -->
+            <section class="login-form">
+                <form method="POST" action="{% url 'login' %}" role="login">
+                    <div>
+                            <img src="/static/img/h1_sk_planet.png" alt="" />
+                            <h4>Login to L4 device controller</h4>
+                    </div>
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <!--<label for="{{ form.username.id_for_label }}">아이디</label>-->
+                        <input class="form-control input-lg" placeholder="아이디" id="{{ form.username.id_for_label }}" maxlength="15" name="{{ form.username.html_name }}" type="id" required />
+                    </div>
+                    <div class="form-group">
+                        <!--<label for="{{ form.password.id_for_label }}">패스워드</label>-->
+                        <input class="form-control input-lg" placeholder="패스워드" id="{{ form.password.id_for_label }}" maxlength="120" name="{{ form.password.html_name }}" type="password" />
+                    </div>
+                    <button type="submit" name="go" class="btn btn-lg btn-block btn-info">
+                        Sign in
+                        <input type="hidden" name="next" value="">
+                    </button>
+                </form>
+            </section>
+        {% endif %}
 	</section>
 </body>
 </html>
