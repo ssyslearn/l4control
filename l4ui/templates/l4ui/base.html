@@ -31,22 +31,23 @@
 		            <a href="/" title="L4 생성">L4 생성</a>
                 </li>
             </ul>
+        <!--
             <ul class="nav navbar-nav navbar-right">
                 <li class="dropdown">
 
-                    {% if session.id %}
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">{{ session.id }} <b class="caret"></b></a>
-		    {% else %}
-		    <a href="{% url 'login' %}"> login </a>
-                    {% endif %}
-                    <ul class="dropdown-menu">
-                        <li>
-                            <a href="/logout"><i class="icon-pencil fa-fw"></i> logout</a>
-                        </li>
-                    </ul>
 
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">{{ session.id }} <b class="caret"></b></a>
+
+		                <a href="{% url 'django.contrib.auth.views.login' %}"> login </a>
+
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="/logout"><i class="icon-pencil fa-fw"></i> logout</a>
+                            </li>
+                        </ul>
                 </li>
             </ul>
+            -->
         </div>
         <!-- /.navbar-collapse -->
     </div>
