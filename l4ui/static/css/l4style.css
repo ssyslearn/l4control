@@ -1,0 +1,17 @@
+.row-mine {
+    margin-left: 100px;
+    margin-right: 100px;
+}
+
+.col-md-12 {
+    width: 100%;
+    margin: 10px 1px 5px 0px;
+    padding-left: 15px;
+    padding-right: 0px;
+}
+
+.col-md-4 {
+        width: 33.33333333%;
+        padding-left: 15px;
+        padding-right: 0px;
+}

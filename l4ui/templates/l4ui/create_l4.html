@@ -1,211 +1,216 @@
 {% extends 'l4ui/base.html' %}
 
+
 {% block content %}
-<link href="/static/style.css" rel="stylesheet" type="text/css">
+    <div class="container">
+        <div class="row home-intro text-center">
 
-<div class="container">
-    <div class="row home-intro text-center">
+            <h2 class="tagline">L4 생성</h2>
+            <hr class="small">
 
-        <h2 class="tagline">L4 생성</h2>
-        <hr class="small">
-
-        <div id="test"></div>
+            <div id="test"></div>
 
         </div>
-</div>
-<div class="container">
-        <h3>L4 장비 선택</h3>
-        <div class="row">
-                <div class="list-group col-sm-4">
-
-                    <div class="well" style="max-height: 350px;overflow: auto;">
-                        <ul id="check-list-box" class="list-group checked-list-box">
-                          <li class="list-group-item">KRBD06_PCIWW01_2000L4</li>
-                          <li class="list-group-item">KRBD06_PCIWW02_2000L4</li>
-                          <li class="list-group-item">KRBD06_PCIWW03_2000L4</li>
-
-
-                        </ul>
-                    </div>
-                </div>
-                <div class="col-sm-8">
+    </div>
+    <div class="container">
+        <div class="row" style="margin-left: 100px; margin-right: 100px; ">
+            <div class="row-mine">
+                <div class="col-md-12">
+                    <label id="label_virtual_ip">Virtual IP</label>
                     <input type="text" id="hostname" placeholder="Hostname" required="" class="form-control input-lg" >
-                    <label id="label_hostname"><font color="red">&nbsp;필수 입력 사항입니다.</font></label>
-                    <br/><br/>
-
-                    <input type="text" id="vip" placeholder="Virtual IP (ex. 127.0.0.1:80)" required="" class="form-control input-lg" >
-                     <label id="label_vip"><font color="red">&nbsp;필수 입력 사항입니다.</font></label>
-                    <br/><br/>
-
-                    <input type="text" id="rip" placeholder="Real IP (ex. 10.0.0.1:80, 10.0.0.2:80, 10.0.0.3:80, 10.0.0.4:80)" required="" class="form-control input-lg">
-                     <label id="label_rip"><font color="red">&nbsp;필수 입력 사항입니다.</font></label>
-                    <br/><br/>
-
-                    <input type="text" id="sticky" placeholder="Options (ex. Sticky or NO)" required="" class="form-control input-lg">
-                     <label id="label_sticky"><font color="red">&nbsp;필수 입력 사항입니다.</font></label>
-                    <br/><br/>
                 </div>
+            </div>
+
+             <div class="row-mine">
+                <div class="col-md-12">
+                    <label id="label_service_name">서비스 명</label>
+                    <input type="text" id="vip" placeholder="Virtual IP (ex. 127.0.0.1:80)" required="" class="form-control input-lg" >
+                </div>
+            </div>
+
+            <div class="row-mine">
+                <div class="col-md-12">
+                    <label id="label_virtual_port">Virtual Port</label>
+                    <input type="text" id="rip" placeholder="Port" required="" class="form-control input-lg">
+                </div>
+                <div class="col-md-4"><input type="text" id="rip" placeholder="Sticky" required="" class="form-control input-md"></div>
+                <div class="col-md-4"><input type="text" id="rip" placeholder="DSR 유/무" required="" class="form-control input-md"></div>
+                <div class="col-md-4"><input type="text" id="rip" placeholder="SSL 인증서" required="" class="form-control input-md"></div>
+            </div>
+
+             <div class="row-mine">
+                <div class="col-md-12">
+                    <label id="label_real_server">Real Server</label>
+                    <input type="text" id="sticky" placeholder="Real IP" required="" class="form-control input-lg">
+                </div>
+                <div class="col-md-4"><input type="text" id="sticky" placeholder="Port" required="" class="form-control input-md"></div>
+                <div class="col-md-4"><input type="text" id="sticky" placeholder="LB Mode" required="" class="form-control input-md"></div>
+                <div class="col-md-4"><input type="text" id="sticky" placeholder="Monitor" required="" class="form-control input-md"></div>
+            </div>
+
+            <div class="row-mine">
+                <div class="col-md-12" align="right">
+                <button class="btn btn-success btn-lg" id="get-checked-data">확인</button>
+                    <input id="create_button" type="button" class="btn btn-lg btn-success" value="생성" onclick="vip_create();" disabled/>
+                </div>
+            </div>
         </div>
-        <br>
-        <div align="right">
-            <button class="btn btn-success btn-lg" id="get-checked-data">확인</button>
-            <input id="create_button" type="button" class="btn btn-lg btn-success" value="생성" onclick="vip_create();" disabled/>
-        </div>
-        <br />
         <pre id="display-json"></pre>
-</div>
+    </div>
 
 
-<script src="/static/js/jquery/1.11.3/jquery.min.js"></script>
-<script src="/static/js/jquery.redirect.js"></script>
+    <script src="/static/js/jquery/1.11.3/jquery.min.js"></script>
+    <script src="/static/js/jquery.redirect.js"></script>
+    <link href="/static/css/l4style.css" rel="stylesheet" type="text/css">
 
-<script type=text/javascript>
-$(function () {
-    $('.list-group.checked-list-box .list-group-item').each(function () {
-        // Settings
-        var $widget = $(this),
-            $checkbox = $('<input type="checkbox" class="hidden" />'),
-            color = ($widget.data('color') ? $widget.data('color') : "primary"),
-            style = ($widget.data('style') == "button" ? "btn-" : "list-group-item-"),
-            settings = {
-                on: {
-                    icon: 'glyphicon glyphicon-check'
-                },
-                off: {
-                    icon: 'glyphicon glyphicon-unchecked'
-                }
-            };
 
-        $widget.css('cursor', 'pointer')
-        $widget.append($checkbox);
-
-        /* no duplicate select device
-        // Event Handlers
-        $widget.on('click', function () {
+    <script type=text/javascript>
+        $(function () {
             $('.list-group.checked-list-box .list-group-item').each(function () {
-                $(this).removeClass('list-group-item-primary active');
-                $(this).find('.state-icon').removeClass().addClass('state-icon glyphicon glyphicon-unchecked');
-                $(this).find('input').prop('checked', false);
+                // Settings
+                var $widget = $(this),
+                    $checkbox = $('<input type="checkbox" class="hidden" />'),
+                    color = ($widget.data('color') ? $widget.data('color') : "primary"),
+                    style = ($widget.data('style') == "button" ? "btn-" : "list-group-item-"),
+                    settings = {
+                        on: {
+                            icon: 'glyphicon glyphicon-check'
+                        },
+                        off: {
+                            icon: 'glyphicon glyphicon-unchecked'
+                        }
+                    };
+
+                $widget.css('cursor', 'pointer')
+                $widget.append($checkbox);
+
+                /* no duplicate select device
+                 // Event Handlers
+                 $widget.on('click', function () {
+                 $('.list-group.checked-list-box .list-group-item').each(function () {
+                 $(this).removeClass('list-group-item-primary active');
+                 $(this).find('.state-icon').removeClass().addClass('state-icon glyphicon glyphicon-unchecked');
+                 $(this).find('input').prop('checked', false);
+                 });
+                 // END INSERT
+
+                 $checkbox.prop('checked', !$checkbox.is(':checked'));
+                 $checkbox.triggerHandler('change');
+                 updateDisplay();
+                 });
+                 */
+
+
+                // Event Handlers
+                $widget.on('click', function () {
+                    $checkbox.prop('checked', !$checkbox.is(':checked'));
+                    $checkbox.triggerHandler('change');
+                    updateDisplay();
+                });
+                $checkbox.on('change', function () {
+                    updateDisplay();
+                });
+
+
+                // Actions
+                function updateDisplay() {
+                    var isChecked = $checkbox.is(':checked');
+
+                    // Set the button's state
+                    $widget.data('state', (isChecked) ? "on" : "off");
+
+                    // Set the button's icon
+                    $widget.find('.state-icon')
+                        .removeClass()
+                        .addClass('state-icon ' + settings[$widget.data('state')].icon);
+
+                    // Update the button's color
+                    if (isChecked) {
+                        $widget.addClass(style + color + ' active');
+                    } else {
+                        $widget.removeClass(style + color + ' active');
+                    }
+                }
+
+                // Initialization
+                function init() {
+
+                    if ($widget.data('checked') == true) {
+                        $checkbox.prop('checked', !$checkbox.is(':checked'));
+                    }
+
+                    updateDisplay();
+
+                    // Inject the icon if applicable
+                    /*
+                     if ($widget.find('.state-icon').length == 0) {
+                     $widget.prepend('<span class="state-icon ' + settings[$widget.data('state')].icon + '"></span>');
+                     }
+                     */
+                }
+                init();
             });
-                // END INSERT
 
-            $checkbox.prop('checked', !$checkbox.is(':checked'));
-            $checkbox.triggerHandler('change');
-            updateDisplay();
+            $('#get-checked-data').on('click', function(event) {
+                event.preventDefault();
+                var checkedItems = {};
+                checkedItems["items"] = new Array();
+                $("#check-list-box li.active").each(function(idx, li) {
+                    checkedItems["items"].push({"device": $(li).text(), "servername": $('#hostname').val(),
+                        "virtual_ip_port": $('#vip').val(), "poolmembers": $('#rip').val().split(","),
+                        "options": [$('#sticky').val()]});
+                    /*
+                     checkedItems["items"][0]["servername"] = $('#hostname').val();
+                     checkedItems["items"][0]["virtual_ip_port"] = $('#vip').val();
+                     checkedItems["items"][0]["poolmembers"] = $('#rip').val().split(",");
+                     checkedItems["items"][0]["options"] = [$('#sticky').val()];
+                     */
+                });
+                $('#display-json').html(JSON.stringify(checkedItems, null, '\t'));
+                $('#create_button').removeAttr("disabled");
+            });
         });
-        */
-
-
-        // Event Handlers
-        $widget.on('click', function () {
-            $checkbox.prop('checked', !$checkbox.is(':checked'));
-            $checkbox.triggerHandler('change');
-            updateDisplay();
-        });
-        $checkbox.on('change', function () {
-            updateDisplay();
-        });
-
-
-        // Actions
-        function updateDisplay() {
-            var isChecked = $checkbox.is(':checked');
-
-            // Set the button's state
-            $widget.data('state', (isChecked) ? "on" : "off");
-
-            // Set the button's icon
-            $widget.find('.state-icon')
-                .removeClass()
-                .addClass('state-icon ' + settings[$widget.data('state')].icon);
-
-            // Update the button's color
-            if (isChecked) {
-                $widget.addClass(style + color + ' active');
-            } else {
-                $widget.removeClass(style + color + ' active');
+        function vip_create(){
+            if($('#display-json').text() == ''){
+                alert("확인 후 생성해야합니다.");
+                return
+            }
+            if($('#hostname').val() && $('#vip').val() && $('#rip').val() && $('#sticky').val()){
+                $.redirect('/create', {'create_arg': $('#display-json').text()}, 'POST');
+            }
+            else{
+                alert("미입력한 정보가 없는지 다시 확인해주세요.");
             }
         }
-
-        // Initialization
-        function init() {
-
-            if ($widget.data('checked') == true) {
-                $checkbox.prop('checked', !$checkbox.is(':checked'));
+        $('#hostname').blur(function()
+        {
+            $('#create_button').attr("disabled", "disabled");
+            if( $(this).val() ) {
+                $('#label_hostname').text("");
             }
-
-            updateDisplay();
-
-            // Inject the icon if applicable
-            /*
-            if ($widget.find('.state-icon').length == 0) {
-                $widget.prepend('<span class="state-icon ' + settings[$widget.data('state')].icon + '"></span>');
-            }
-            */
-        }
-        init();
-    });
-
-    $('#get-checked-data').on('click', function(event) {
-        event.preventDefault();
-        var checkedItems = {};
-        checkedItems["items"] = new Array();
-        $("#check-list-box li.active").each(function(idx, li) {
-            checkedItems["items"].push({"device": $(li).text(), "servername": $('#hostname').val(),
-                                        "virtual_ip_port": $('#vip').val(), "poolmembers": $('#rip').val().split(","),
-                                        "options": [$('#sticky').val()]});
-            /*
-            checkedItems["items"][0]["servername"] = $('#hostname').val();
-            checkedItems["items"][0]["virtual_ip_port"] = $('#vip').val();
-            checkedItems["items"][0]["poolmembers"] = $('#rip').val().split(",");
-            checkedItems["items"][0]["options"] = [$('#sticky').val()];
-            */
         });
-        $('#display-json').html(JSON.stringify(checkedItems, null, '\t'));
-        $('#create_button').removeAttr("disabled");
-    });
-});
-function vip_create(){
-    if($('#display-json').text() == ''){
-        alert("확인 후 생성해야합니다.");
-        return
-    }
-    if($('#hostname').val() && $('#vip').val() && $('#rip').val() && $('#sticky').val()){
-        $.redirect('/create', {'create_arg': $('#display-json').text()}, 'POST');
-    }
-    else{
-        alert("미입력한 정보가 없는지 다시 확인해주세요.");
-    }
-}
-$('#hostname').blur(function()
-{
-    $('#create_button').attr("disabled", "disabled");
-    if( $(this).val() ) {
-        $('#label_hostname').text("");
-    }
-});
-$('#vip').blur(function()
-{
-    $('#create_button').attr("disabled", "disabled");
-    if( $(this).val() ) {
-        $('#label_vip').text("");
-    }
-});
-$('#rip').blur(function()
-{
-    $('#create_button').attr("disabled", "disabled");
-    if( $(this).val() ) {
-        $('#label_rip').text("");
-    }
-});
-$('#sticky').blur(function()
-{
-    $('#create_button').attr("disabled", "disabled");
-    if( $(this).val() ) {
-        $('#label_sticky').text("");
-    }
-});
+        $('#vip').blur(function()
+        {
+            $('#create_button').attr("disabled", "disabled");
+            if( $(this).val() ) {
+                $('#label_vip').text("");
+            }
+        });
+        $('#rip').blur(function()
+        {
+            $('#create_button').attr("disabled", "disabled");
+            if( $(this).val() ) {
+                $('#label_rip').text("");
+            }
+        });
+        $('#sticky').blur(function()
+        {
+            $('#create_button').attr("disabled", "disabled");
+            if( $(this).val() ) {
+                $('#label_sticky').text("");
+            }
+        });
 
-</script>
+    </script>
 
 {% endblock %}
