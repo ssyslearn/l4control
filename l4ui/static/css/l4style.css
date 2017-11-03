@@ -11,7 +11,7 @@
     width: 100%;
     margin: 5px 1px 5px 0px;
     padding-left: 15px;
-    padding-right: 0px;
+    padding-right: 15px;
 }
 
 .col-md-2 {
@@ -25,6 +25,7 @@
         padding-left: 0px;
         padding-right: 0px;
 }
+
 
 .col-md-6 {
         width: 50%;
@@ -52,4 +53,17 @@
 
 .label-subtitle {
     color: #9d9d9d;
+}
+
+.col-md-4-round-box {
+        width: 33.33333333%;
+        border: 1px solid;
+        border-color: #9d9d9d;
+        border-radius: 2em;
+        border-top-left-radius: 2em;
+        border-top-right-radius: 2em;
+        border-bottom-left-radius: 2em;
+        border-bottom-right-radius: 2em;
+        padding: 10px 10px 10px 10px;
+        margin: 10px 10px 10px 10px;
 }

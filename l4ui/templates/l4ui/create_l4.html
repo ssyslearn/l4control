@@ -15,143 +15,103 @@
     <div class="container">
         <div class="row-mid" style="margin-left: 300px; margin-right: 300px; ">
 
-                <div class="col-md-12">
-                    <label class="label-title" id="label_virtual_ip">Virtual IP</label>
-                    <input type="text" id="hostname" placeholder="Virtual IP" required="" class="form-control input-lg" >
-                </div>
+            <div class="col-md-12">
+                <label class="label-title" id="label_virtual_ip">Virtual IP</label>
+                <input type="text" id="hostname" placeholder="Virtual IP" required="" class="form-control input-lg" >
+            </div>
 
 
 
-                <div class="col-md-12">
-                    <label class="label-title" id="label_service_name">서비스 명</label>
-                    <input type="text" id="vip" placeholder="서비스명을 입력하세요" required="" class="form-control input-lg" >
-                </div>
+            <div class="col-md-12">
+                <label class="label-title" id="label_service_name">서비스 명</label>
+                <input type="text" id="vip" placeholder="서비스명을 입력하세요" required="" class="form-control input-lg" >
+            </div>
 
 
 
-                <div class="col-md-12">
-                    <label class="label-title" id="label_virtual_port">Virtual Port</label>
-                </div>
-                <div class="col-md-4">
-                    <div class="col-md-12"><input type="text" id="rip" placeholder="ex. 80" required="" class="form-control input-lg"></div>
-                    <div class="col-md-12">
-                        <select class="form-control input-md" id="sel1">
-                            <option>Sticky 사용 안함</option>
-                            <option>Sticky 300초</option>
-                            <option>Sticky 600초</option>
-                            <option>Sticky 900초</option>
-                            <option>Sticky 1800초</option>
-                        </select>
-                    </div>
-                    <div class="col-md-12">
-                        <select class="form-control input-md" id="sel1">
-                            <option>DSR 사용 안함</option>
-                            <option>DSR 사용</option>
-                        </select>
-                    </div>
-                    <div class="col-md-12">
-                        <select class="form-control input-md" id="sel1">
-                            <option>SSL 인증서 사용 안함</option>
-                            <option>SSL 인증서 사용</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="col-md-12"><input type="text" id="rip" placeholder="ex. 443" required="" class="form-control input-lg"></div>
-                    <div class="col-md-12">
-                        <select class="form-control input-md" id="sel1">
-                            <option>Sticky 사용 안함</option>
-                            <option>Sticky 300초</option>
-                            <option>Sticky 600초</option>
-                            <option>Sticky 900초</option>
-                            <option>Sticky 1800초</option>
-                        </select>
-                    </div>
-                    <div class="col-md-12">
-                        <select class="form-control input-md" id="sel1">
-                            <option>DSR 사용 안함</option>
-                            <option>DSR 사용</option>
-                        </select>
-                    </div>
-                    <div class="col-md-12">
-                        <select class="form-control input-md" id="sel1">
-                            <option>SSL 인증서 사용 안함</option>
-                            <option>SSL 인증서 사용</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="col-md-12"><input type="text" id="rip" placeholder="ex. 8080" required="" class="form-control input-lg"></div>
-                    <div class="col-md-12">
-                        <select class="form-control input-md" id="sel1">
-                            <option>Sticky 사용 안함</option>
-                            <option>Sticky 300초</option>
-                            <option>Sticky 600초</option>
-                            <option>Sticky 900초</option>
-                            <option>Sticky 1800초</option>
-                        </select>
-                    </div>
-                    <div class="col-md-12">
-                        <select class="form-control input-md" id="sel1">
-                            <option>DSR 사용 안함</option>
-                            <option>DSR 사용</option>
-                        </select>
-                    </div>
-                    <div class="col-md-12">
-                        <select class="form-control input-md" id="sel1">
-                            <option>SSL 인증서 사용 안함</option>
-                            <option>SSL 인증서 사용</option>
-                        </select>
-                    </div>
-                </div>
+            <div class="col-md-12">
+                <label class="label-title" id="label_virtual_port">Virtual Port</label>
+                <button class="btn btn-xs btn-info">+</button>
 
-
-
-
-                <div class="col-md-12">
-                    <label class="label-title" id="label_real_server">Real Server</label>
-                </div>
-                <div class="col-md-6">
-                    <label class="label-subtitle">Real IP</label>
-                    <input type="text" id="sticky" placeholder="ex. 10.10.1.1" required="" class="form-control input-lg">
-                </div>
-
-                <div class="col-md-6">
-                    <div class="col-md-4">
+            <!--<div class="col-md-4">-->
+                <div class="col-md-4-round-box">
+                    <div class="col-md-12-inner">
                         <label class="label-subtitle">Port</label>
-                        <input type="text" id="sticky" placeholder="ex. 80" required="" class="form-control input-md">
+                        <input type="text" id="rip" placeholder="ex. 80" required="" class="form-control input-lg">
                     </div>
-
-                    <div class="col-md-4">
-                        <label class="label-subtitle">LB mode</label>
+                    <div class="col-md-12-inner">
+                        <label class="label-subtitle">Sticky 사용 여부</label>
                         <select class="form-control input-md" id="sel1">
-                            <option>Round Robin</option>
-                            <option>Least Connections</option>
+                            <option>사용 안함</option>
+                            <option>300초</option>
+                            <option>600초</option>
+                            <option>900초</option>
+                            <option>1800초</option>
                         </select>
                     </div>
 
-                    <div class="col-md-4">
-                        <label class="label-subtitle">Monitor</label>
+                    <div class="col-md-12-inner">
+                        <label class="label-subtitle">DSR 사용 여부</label>
                         <select class="form-control input-md" id="sel1">
-                            <option>http_healthcheck.jsp_skphok</option>
-                            <option>tcp</option>
-                            <option>tcp_half_open</option>
-                            <option>icmp</option>
-                            <option>udp</option>
+                            <option>사용 안함</option>
+                            <option>사용</option>
+                        </select>
+                    </div>
+                    <div class="col-md-12-inner">
+                        <label class="label-subtitle">SSL 인증서 사용 여부 </label>
+                        <select class="form-control input-md" id="sel1">
+                            <option>사용 안함</option>
+                            <option>사용</option>
                         </select>
                     </div>
                 </div>
+            </div>
 
 
 
+            <div class="col-md-12">
+                <label class="label-title" id="label_real_server">Real Server</label>
+                <button class="btn btn-xs btn-info">+</button>
+            </div>
+            <div class="col-md-6">
+                <label class="label-subtitle">Real IP</label>
+                <input type="text" id="sticky" placeholder="ex. 10.10.1.1" required="" class="form-control input-lg">
+            </div>
 
-
-                <div class="col-md-12" align="right">
-                    <button class="btn btn-success btn-lg" id="get-checked-data">확인</button>
-                    <input id="create_button" type="button" class="btn btn-lg btn-success" value="생성" onclick="vip_create();" disabled/>
+            <div class="col-md-6">
+                <div class="col-md-4">
+                    <label class="label-subtitle">Port</label>
+                    <input type="text" id="sticky" placeholder="ex. 80" required="" class="form-control input-md">
                 </div>
 
-            <pre id="display-json"></pre>
+                <div class="col-md-4">
+                    <label class="label-subtitle">LB mode</label>
+                    <select class="form-control input-md" id="sel1">
+                        <option>Round Robin</option>
+                        <option>Least Connections</option>
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="label-subtitle">Monitor</label>
+                    <select class="form-control input-md" id="sel1">
+                        <option>http_healthcheck.jsp_skphok</option>
+                        <option>tcp</option>
+                        <option>tcp_half_open</option>
+                        <option>icmp</option>
+                        <option>udp</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-md-12" align="right">
+                <button class="btn btn-success btn-lg" id="get-checked-data">확인</button>
+                <input id="create_button" type="button" class="btn btn-lg btn-success" value="생성" onclick="vip_create();" disabled/>
+            </div>
+
+            <div class="col-md-12">
+                <pre id="display-json"></pre>
+            </div>
         </div>
 
     </div>
