@@ -25,7 +25,7 @@
                 <button v-on:click="assign" class="btn btn-lg btn-info" >IP 할당</button>
             </div>
         </div>
-
+        
         <div id="service_name">
             <div class="col-md-12">
                 <label class="label-title">서비스 명</label>
