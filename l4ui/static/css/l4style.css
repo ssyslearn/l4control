@@ -62,6 +62,10 @@
     color: #9d9d9d;
 }
 
+.label-svctitle {
+    color: #d43f3a;
+}
+
 .col-md-round-box {
         width: 100%;
         overflow: auto;
