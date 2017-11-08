@@ -26,30 +26,31 @@
             </div>
         </div>
 
+            <div id="virtual_server">
+              <div>
+                  <div class="col-md-12">
+                      <label class="label-title">서비스 명</label>
+                  </div>
+                  <div class="col-md-8">
+                      <input v-model="input_service_name" type="text"  placeholder="서비스명을 입력하세요" required="" class="form-control input-lg" >
+                      <!--<span class="label-svctitle" v-for="index in vs_count" v-model="virtual_port[0]">-->
+                      <span class="label-svctitle" v-for="index in virtual_port">
+                          <!--v_${ input_vip }_${ input_service_name }_${ port },-->
+                          v_${ input_vip }_${ input_service_name }_${ index },
+                      </span>
+                  </div>
+                  <div class="col-md-12"><br></div>
+              </div>
 
-            <div id="service_name">
-                <div class="col-md-12">
-                    <label class="label-title">서비스 명</label>
-                </div>
-                <div class="col-md-8">
-                    <input v-model="input_service_name" type="text"  placeholder="서비스명을 입력하세요" required="" class="form-control input-lg" >
-                    <!--<span class="label-svctitle" v-for="index in vs_count" v-model="virtual_port[0]">-->
-                    <span class="label-svctitle" v-for="index in vs_count">
-                        <!--v_${ input_vip }_${ input_service_name }_${ port },-->
-                        v_${ input_vip }_${ input_service_name }_${ virtual_port[index] },
-                    </span>
-                </div>
-                <div class="col-md-12"><br></div>
-            </div>
-
-            <div id="virtual_server" class="col-md-12">
-                <label class="label-title">Virtual Server</label>
-                <button v-on:click="add_vs" class="btn btn-xs btn-info">+</button>
-                <div v-bind:id="`vs-box-${ index }`" v-for="index in vs_count">
-                <!--<div v-bind:id="`vs-box-${ vport }`" v-for="vport in virtual_port">-->
-                    <virtual-server-box></virtual-server-box>
-                </div>
-            </div>
+              <div class="col-md-12">
+                  <label class="label-title">Virtual Server</label>
+                  <button v-on:click="add_vs" class="btn btn-xs btn-info">+</button>
+                  <div v-bind:id="`vs-box-${ index }`" v-for="index in vs_count">
+                  <!--<div v-bind:id="`vs-box-${ vport }`" v-for="vport in virtual_port">-->
+                      <virtual-server-box></virtual-server-box>
+                  </div>
+              </div>
+      </div>
 
 
 
@@ -72,16 +73,13 @@
 
 
 <script>
-
     Vue.options.delimiters = ['${', '}'];
-
     var data = {
         vs_count: 1,
         input_vip: '',
         input_service_name: '',
         virtual_port: []
     }
-
     var assign_vip = new Vue({
         el: '#assign_vip',
         data: data,
@@ -91,19 +89,22 @@
             }
         }
     })
-
     var service_name = new Vue({
         el: '#service_name',
         data: data
     })
-
-
     var virtual_server_box = {
             props: ['virtual_port'],
             data: function() {
                 return {
-                    vs_box_port: this.virtual_port
+                    vs_box_port: ''
                 }
+            },
+            methods: {
+              changed: function (){
+                this.$parent.virtual_port.push(this.vs_box_port);
+                //alert(this.$parent);
+              }
             },
             template: '<div class="col-md-round-box">' +
             '<div class="col-md-4"> ' +
@@ -111,7 +112,7 @@
             '<div class="col-md-round-box">' +
             '<div class="col-md-12-inner" >' +
             '<label class="label-subtitle">Port</label> ' +
-            '<input type="text" placeholder="ex. 80" required="" class="form-control input-lg" v-model="vs_box_port">' +
+            '<input type="text" placeholder="ex. 80" required="" class="form-control input-lg" v-model="vs_box_port" v-on:change="changed">' +
             '</div> ' +
             '<div class="col-md-12-inner">' +
             '<label class="label-subtitle">Sticky 사용 여부</label><select class="form-control input-md" id="sel1"> ' +
@@ -152,9 +153,7 @@
             '</div>' +
             '</div>' +
             '</div>',
-
     }
-
     var virtual_server = new Vue({
         el: '#virtual_server',
         data: data,
@@ -165,15 +164,12 @@
             add_vs: function (event) {
                 if (this.vs_count < 5) {
                     this.vs_count += 1;
-                    //alert(this.$el.getElementsByClassName("vport_class")[this.vs_count-1].text);
-                    //this.virtual_port.push(this.$el.getElementsByClassName("vport_class")[this.vs_count-1].value);
-                    //this.virtual_port = assign_vport.virtual_port;
-                    this.virtual_port = this.$children;
+                    //alert(this.$children[Number(this.vs_count)-2].vs_box_port);
+                    //this.virtual_port.push(this.$children[Number(this.vs_count)-2].vs_box_port);
                 }
             }
         }
     })
-
     var assign_vport = new Vue({
         el: '#assign_vport',
         data: data,
