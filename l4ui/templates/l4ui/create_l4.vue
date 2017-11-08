@@ -26,31 +26,31 @@
             </div>
         </div>
 
-            <div id="virtual_server">
-              <div>
-                  <div class="col-md-12">
-                      <label class="label-title">서비스 명</label>
-                  </div>
-                  <div class="col-md-8">
-                      <input v-model="input_service_name" type="text"  placeholder="서비스명을 입력하세요" required="" class="form-control input-lg" >
-                      <!--<span class="label-svctitle" v-for="index in vs_count" v-model="virtual_port[0]">-->
-                      <span class="label-svctitle" v-for="index in virtual_port">
+        <div id="virtual_server">
+            <div>
+                <div class="col-md-12">
+                    <label class="label-title">서비스 명</label>
+                </div>
+                <div class="col-md-8">
+                    <input v-model="input_service_name" type="text"  placeholder="서비스명을 입력하세요" required="" class="form-control input-lg" >
+                    <!--<span class="label-svctitle" v-for="index in vs_count" v-model="virtual_port[0]">-->
+                    <span class="label-svctitle" v-for="index in virtual_port">
                           <!--v_${ input_vip }_${ input_service_name }_${ port },-->
-                          v_${ input_vip }_${ input_service_name }_${ index },
+                          v_${ input_vip }_${ input_service_name }_${ index.port },
                       </span>
-                  </div>
-                  <div class="col-md-12"><br></div>
-              </div>
+                </div>
+                <div class="col-md-12"><br></div>
+            </div>
 
-              <div class="col-md-12">
-                  <label class="label-title">Virtual Server</label>
-                  <button v-on:click="add_vs" class="btn btn-xs btn-info">+</button>
-                  <div v-bind:id="`vs-box-${ index }`" v-for="index in vs_count">
-                  <!--<div v-bind:id="`vs-box-${ vport }`" v-for="vport in virtual_port">-->
-                      <virtual-server-box></virtual-server-box>
-                  </div>
-              </div>
-      </div>
+            <div class="col-md-12">
+                <label class="label-title">Virtual Server</label>
+                <button v-on:click="add_vs" class="btn btn-xs btn-info">+</button>
+                <div v-bind:id="`vs-box-${ index }`" v-for="index in vs_count">
+                    <!--<div v-bind:id="`vs-box-${ vport }`" v-for="vport in virtual_port">-->
+                    <virtual-server-box></virtual-server-box>
+                </div>
+            </div>
+        </div>
 
 
 
@@ -74,12 +74,14 @@
 
 <script>
     Vue.options.delimiters = ['${', '}'];
+
     var data = {
         vs_count: 1,
         input_vip: '',
         input_service_name: '',
         virtual_port: []
     }
+
     var assign_vip = new Vue({
         el: '#assign_vip',
         data: data,
@@ -93,73 +95,109 @@
         el: '#service_name',
         data: data
     })
-    var virtual_server_box = {
-            props: ['virtual_port'],
-            data: function() {
-                return {
-                    vs_box_port: ''
-                }
-            },
-            methods: {
-              changed: function (){
-                this.$parent.virtual_port.push(this.vs_box_port);
+
+    Vue.component('real-server-box', {
+        data: function() {
+            return {
+                real_box_port: '',
+                real_box_ip: '',
+                real_box_lb_mode: '',
+                real_box_monitor: '',
+                real_box_count: this.$parent.real_count,
+                real_box_dict: ''
+            }
+        },
+        methods: {
+            changed: function (){
+                //this.$parent.real_port[this.real_box_count-1] = { 'port': this.real_box_port, 'ip': this.real_box_ip, 'lb_mode': this.real_box_lb, 'monitor': this.real_box_mon};
                 //alert(this.$parent);
-              }
+                //this.real_box_dict = {'port': this.real_box_port, 'ip': this.real_box_ip, 'lb_mode': this.real_box_lb, 'monitor': this.real_box_mon};
+                //alert(this.$parent.real_port[this.real_box_count-1]);
+                this.$parent.real_port[this.real_box_count-1]['ip'] = this.real_box_ip;
+                this.$parent.real_port[this.real_box_count-1]['port'] = this.real_box_port;
+                this.$parent.real_port[this.real_box_count-1]['lb_mode'] = this.real_box_lb_mode;
+                this.$parent.real_port[this.real_box_count-1]['monitor'] = this.real_box_monitor;
+            }
+        },
+        template: '<div class="col-md-round-box"> ' +
+        '<div class="col-md-4">' +
+        '<label class="label-subtitle">Real IP</label> ' +
+        '<input v-model="real_box_ip" v-on:change="changed" type="text" placeholder="ex. 10.10.10.10" required="" class="form-control input-md">' +
+        '</div> ' +
+        '<div class="col-md-2">' +
+        '<label class="label-subtitle">Port</label><input type="text" v-model="real_box_port" v-on:change="changed" placeholder="ex. 80" required="" class="form-control input-md"> ' +
+        '</div>' +
+        '<div class="col-md-2">' +
+        '<label class="label-subtitle">LB mode</label>' +
+        '<select v-model="real_box_lb_mode" v-on:change="changed"  class="form-control input-md" > ' +
+        '<option>Round Robin</option> <option>Least Connections</option> </select>' +
+        '</div> ' +
+        '<div class="col-md-3">' +
+        '<label class="label-subtitle">Monitor</label>' +
+        '<select v-model="real_box_monitor" v-on:change="changed"  class="form-control input-md" > ' +
+        '<option>http_healthcheck.jsp_skphok</option> <option>tcp</option> <option>tcp_half_open</option> <option>icmp</option> ' +
+        '<option>udp</option> </select>' +
+        '</div>' +
+        '</div>'
+    })
+
+    Vue.component('virtual-server-box', {
+        props: [],
+        data: function() {
+            return {
+                vs_box_port: '',
+                real_count: 1,
+                real_port: [{'port': '', 'ip': '', 'lb_mode': '', 'monitor': ''}]
+            }
+        },
+        methods: {
+            changed: function (){
+                this.$parent.virtual_port.push({'port': this.vs_box_port, 'real_count': this.real_count, 'real_port': this.real_port});
             },
-            template: '<div class="col-md-round-box">' +
-            '<div class="col-md-4"> ' +
-            '<div class="col-md-12"><label class="label-title">Virtual Port</label></div> ' +
-            '<div class="col-md-round-box">' +
-            '<div class="col-md-12-inner" >' +
-            '<label class="label-subtitle">Port</label> ' +
-            '<input type="text" placeholder="ex. 80" required="" class="form-control input-lg" v-model="vs_box_port" v-on:change="changed">' +
-            '</div> ' +
-            '<div class="col-md-12-inner">' +
-            '<label class="label-subtitle">Sticky 사용 여부</label><select class="form-control input-md" id="sel1"> ' +
-            '<option>사용 안함</option><option>300초</option> <option>600초</option> <option>900초</option> <option>1800초</option> ' +
-            '</select>' +
-            '</div>' +
-            '<div class="col-md-12-inner"><label class="label-subtitle">DSR 사용 여부</label> ' +
-            '<select class="form-control input-md" id="sel1"> <option>사용 안함</option> <option>사용</option> </select>' +
-            '</div> ' +
-            '<div class="col-md-12-inner">' +
-            '<label class="label-subtitle">SSL 인증서 사용 여부 </label><select class="form-control input-md" id="sel1"> ' +
-            '<option>사용 안함</option> <option>사용</option> </select>' +
-            '</div>' +
-            '</div>' +
-            '</div> ' +
-            '<div class="col-md-8">' +
-            '<div class="col-md-12">' +
-            '<label class="label-title" id="label_real_server">Real Server</label> ' +
-            '<button class="btn btn-xs btn-info">+</button>' +
-            '</div>' +
-            '<div class="col-md-round-box"> ' +
-            '<div class="col-md-4">' +
-            '<label class="label-subtitle">Real IP</label> ' +
-            '<input type="text" id="sticky" placeholder="ex. 10.10.1.1" required="" class="form-control input-md">' +
-            '</div> ' +
-            '<div class="col-md-2">' +
-            '<label class="label-subtitle">Port</label><input type="text" id="sticky" placeholder="ex. 80" required="" class="form-control input-md"> ' +
-            '</div>' +
-            '<div class="col-md-2">' +
-            '<label class="label-subtitle">LB mode</label> <select class="form-control input-md" id="sel1"> ' +
-            '<option>Round Robin</option> <option>Least Connections</option> </select>' +
-            '</div> ' +
-            '<div class="col-md-3">' +
-            '<label class="label-subtitle">Monitor</label> <select class="form-control input-md" id="sel1"> ' +
-            '<option>http_healthcheck.jsp_skphok</option> <option>tcp</option> <option>tcp_half_open</option> <option>icmp</option> ' +
-            '<option>udp</option> </select>' +
-            '</div>' +
-            '</div>' +
-            '</div>' +
-            '</div>',
-    }
+            add_real: function () {
+                if (this.real_count < 3) {
+                    this.real_count += 1;
+                    this.real_port.push({'port': '', 'ip': '', 'lb_mode': '', 'monitor': ''});
+                }
+            }
+        },
+        template: '<div class="col-md-round-box">' +
+        '<div class="col-md-4"> ' +
+        '<div class="col-md-12"><label class="label-title">Virtual Port</label></div> ' +
+        '<div class="col-md-round-box">' +
+        '<div class="col-md-12-inner" >' +
+        '<label class="label-subtitle">Port</label> ' +
+        '<input type="text" placeholder="ex. 80" required="" class="form-control input-lg" v-model="vs_box_port" v-on:change="changed">' +
+        '</div> ' +
+        '<div class="col-md-12-inner">' +
+        '<label class="label-subtitle">Sticky 사용 여부</label><select class="form-control input-md" id="sel1"> ' +
+        '<option>사용 안함</option><option>300초</option> <option>600초</option> <option>900초</option> <option>1800초</option> ' +
+        '</select>' +
+        '</div>' +
+        '<div class="col-md-12-inner"><label class="label-subtitle">DSR 사용 여부</label> ' +
+        '<select class="form-control input-md" id="sel1"> <option>사용 안함</option> <option>사용</option> </select>' +
+        '</div> ' +
+        '<div class="col-md-12-inner">' +
+        '<label class="label-subtitle">SSL 인증서 사용 여부 </label><select class="form-control input-md" id="sel1"> ' +
+        '<option>사용 안함</option> <option>사용</option> </select>' +
+        '</div>' +
+        '</div>' +
+        '</div> ' +
+        '<div class="col-md-8">' +
+        '<div class="col-md-12">' +
+        '<label class="label-title" id="label_real_server">Real Server</label> ' +
+        '<button v-on:click="add_real" class="btn btn-xs btn-info">+</button>' +
+        '<div v-bind:id="`real-box-${ index }`" v-for="index in real_count">' +
+        '<real-server-box></real-server-box>' +
+        '</div>' +
+        '</div>' +
+        '</div>' +
+        '</div>'
+    })
+
     var virtual_server = new Vue({
         el: '#virtual_server',
         data: data,
-        components: {
-            'virtual-server-box' : virtual_server_box
-        },
         methods: {
             add_vs: function (event) {
                 if (this.vs_count < 5) {
@@ -170,6 +208,8 @@
             }
         }
     })
+
+
     var assign_vport = new Vue({
         el: '#assign_vport',
         data: data,
