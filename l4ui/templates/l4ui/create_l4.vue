@@ -80,7 +80,7 @@
         vs_count: 1,
         input_vip: '',
         input_service_name: '',
-        virtual_port: []
+        virtual_port: [{'virtual_port': '', 'real_count': '', 'real_port': '', 'sticky': '', 'dsr': '', 'ssl': ''}]
     }
 
     var assign_vip = new Vue({
@@ -142,14 +142,24 @@
         props: [],
         data: function() {
             return {
+                vs_box_count: this.$parent.vs_count,
                 vs_box_port: '',
                 real_count: 1,
-                real_port: [{'port': '', 'ip': '', 'lb_mode': '', 'monitor': ''}]
+                real_port: [{'port': '', 'ip': '', 'lb_mode': '', 'monitor': ''}],
+                sticky: '',
+                dsr: '',
+                ssl: ''
             }
         },
         methods: {
             changed: function (){
-                this.$parent.virtual_port.push({'virtual_port': this.vs_box_port, 'real_count': this.real_count, 'real_port': this.real_port});
+                this.$parent.virtual_port[this.vs_box_count-1]['virtual_port'] = this.vs_box_port;
+                this.$parent.virtual_port[this.vs_box_count-1]['real_count'] = this.real_count;
+                this.$parent.virtual_port[this.vs_box_count-1]['real_port'] = this.real_port;
+                this.$parent.virtual_port[this.vs_box_count-1]['sticky'] = this.sticky;
+                this.$parent.virtual_port[this.vs_box_count-1]['dsr'] = this.dsr;
+                this.$parent.virtual_port[this.vs_box_count-1]['ssl'] = this.ssl;
+                //this.$parent.virtual_port.push({'virtual_port': this.vs_box_port, 'real_count': this.real_count, 'real_port': this.real_port, 'sticky': this.sticky, 'dsr': this.dsr, 'ssl': this.ssl });
             },
             add_real: function () {
                 if (this.real_count < 3) {
@@ -167,15 +177,15 @@
         '<input type="text" placeholder="ex. 80" required="" class="form-control input-lg" v-model="vs_box_port" v-on:change="changed">' +
         '</div> ' +
         '<div class="col-md-12-inner">' +
-        '<label class="label-subtitle">Sticky 사용 여부</label><select class="form-control input-md" id="sel1"> ' +
+        '<label class="label-subtitle">Sticky 사용 여부</label><select v-model="sticky" v-on:change="changed" class="form-control input-md"> ' +
         '<option>사용 안함</option><option>300초</option> <option>600초</option> <option>900초</option> <option>1800초</option> ' +
         '</select>' +
         '</div>' +
         '<div class="col-md-12-inner"><label class="label-subtitle">DSR 사용 여부</label> ' +
-        '<select class="form-control input-md" id="sel1"> <option>사용 안함</option> <option>사용</option> </select>' +
+        '<select v-model="dsr" v-on:change="changed" class="form-control input-md"> <option>사용 안함</option> <option>사용</option> </select>' +
         '</div> ' +
         '<div class="col-md-12-inner">' +
-        '<label class="label-subtitle">SSL 인증서 사용 여부 </label><select class="form-control input-md" id="sel1"> ' +
+        '<label class="label-subtitle">SSL 인증서 사용 여부 </label><select v-model="ssl" v-on:change="changed" class="form-control input-md" id="sel1"> ' +
         '<option>사용 안함</option> <option>사용</option> </select>' +
         '</div>' +
         '</div>' +
@@ -201,8 +211,7 @@
             add_vs: function (event) {
                 if (this.vs_count < 5) {
                     this.vs_count += 1;
-                    //alert(this.$children[Number(this.vs_count)-2].vs_box_port);
-                    //this.virtual_port.push(this.$children[Number(this.vs_count)-2].vs_box_port);
+                    this.virtual_port.push({'virtual_port': '', 'real_count': '', 'real_port': '', 'sticky': '', 'dsr': '', 'ssl': ''});
                 }
             }
         }
