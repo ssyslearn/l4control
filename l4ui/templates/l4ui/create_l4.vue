@@ -36,7 +36,7 @@
                     <!--<span class="label-svctitle" v-for="index in vs_count" v-model="virtual_port[0]">-->
                     <span class="label-svctitle" v-for="index in virtual_port">
                           <!--v_${ input_vip }_${ input_service_name }_${ port },-->
-                          v_${ input_vip }_${ input_service_name }_${ index.port },
+                          v_${ input_vip }_${ input_service_name }_${ index.virtual_port },
                       </span>
                 </div>
                 <div class="col-md-12"><br></div>
@@ -54,13 +54,14 @@
 
 
 
-        <div class="col-md-12" align="right">
-            <button class="btn btn-success btn-lg" id="get-checked-data">확인</button>
-            <input id="create_button" type="button" class="btn btn-lg btn-success" value="생성" onclick="vip_create();" disabled/>
-        </div>
-
-        <div class="col-md-12">
-            <pre id="display-json"></pre>
+        <div id="display_config" class="col-md-12" align="right">
+            <button class="btn btn-success btn-lg" v-on:click="click_display">확인</button>
+            <input type="button" class="btn btn-lg btn-success" value="생성" disabled/>
+            <div class="col-md-12" align="left"><br>
+            <pre>
+                <display-config></display-config>
+            </pre>
+            </div>
         </div>
     </div>
 
@@ -90,10 +91,6 @@
                 alert('Hello ' + this.input_vip + '!')
             }
         }
-    })
-    var service_name = new Vue({
-        el: '#service_name',
-        data: data
     })
 
     Vue.component('real-server-box', {
@@ -152,7 +149,7 @@
         },
         methods: {
             changed: function (){
-                this.$parent.virtual_port.push({'port': this.vs_box_port, 'real_count': this.real_count, 'real_port': this.real_port});
+                this.$parent.virtual_port.push({'virtual_port': this.vs_box_port, 'real_count': this.real_count, 'real_port': this.real_port});
             },
             add_real: function () {
                 if (this.real_count < 3) {
@@ -195,6 +192,8 @@
         '</div>'
     })
 
+
+
     var virtual_server = new Vue({
         el: '#virtual_server',
         data: data,
@@ -209,17 +208,25 @@
         }
     })
 
+    Vue.component('display-config', {
+        props: ['virtual_port'],
+        data: function() {
+            return {
+                display_virtual_port: this.$parent.virtual_port
+            }
+        },
+        template: '<div>virtual_port <br> ${ display_virtual_port }</div>'
+    })
 
-    var assign_vport = new Vue({
-        el: '#assign_vport',
+    var display_config = new Vue({
+        el: '#display_config',
         data: data,
         methods: {
-            changed: function(){
-                alert(10);
+            click_display: function (event) {
+
             }
         }
     })
-
 </script>
 
 {% endblock %}
