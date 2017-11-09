@@ -164,6 +164,7 @@
             add_real: function () {
                 if (this.real_count < 3) {
                     this.real_count += 1;
+                    this.$parent.virtual_port[this.vs_box_count-1]['real_count'] = this.real_count;
                     this.real_port.push({'port': '', 'ip': '', 'lb_mode': '', 'monitor': ''});
                 }
             }
