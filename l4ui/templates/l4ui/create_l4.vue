@@ -112,10 +112,12 @@
                 this.$parent.real_port[this.real_box_count-1]['monitor'] = this.$parent.real_box_monitor;
             }
         },
-        template: '<div class="col-md-round-box"> ' +
+        template: '<div> ' +
         '<div class="col-md-12">' +
         '<label class="label-subtitle">Real IP</label> ' +
-        '<input v-model="real_box_ip" v-on:change="changed" type="text" placeholder="ex. 10.10.10.10" required="" class="form-control input-md">' +
+            '<textarea v-model="real_box_ip" v-on:change="changed" name="content"  placeholder="ex. 10.10.10.10" required="" class="form-control input-md" cols="40" rows="8" >' +
+        //'<input v-model="real_box_ip" v-on:change="changed" type="text" placeholder="ex. 10.10.10.10" required="" class="form-control input-md">' +
+            '</textarea>' +
         '</div> ' +
         '</div>'
     })
