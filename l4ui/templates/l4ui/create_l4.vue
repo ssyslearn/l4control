@@ -140,6 +140,7 @@
         },
         methods: {
             changed: function (){
+                // passing to parent
                 this.$parent.virtual_port[this.vs_box_count-1]['virtual_port'] = this.vs_box_port;
                 this.$parent.virtual_port[this.vs_box_count-1]['real_count'] = this.real_count;
                 this.$parent.virtual_port[this.vs_box_count-1]['real_port'] = this.real_port;
@@ -149,6 +150,12 @@
                 this.$parent.virtual_port[this.vs_box_count-1]['real_box_port'] = this.real_box_port;
                 this.$parent.virtual_port[this.vs_box_count-1]['real_box_lb_mode'] = this.real_box_lb_mode;
                 this.$parent.virtual_port[this.vs_box_count-1]['real_box_monitor'] = this.real_box_monitor;
+
+                //passing to child
+                this.$parent.virtual_port[this.vs_box_count-1].real_port[this.real_count-1]['port'] = this.real_box_port;
+                this.$parent.virtual_port[this.vs_box_count-1].real_port[this.real_count-1]['lb_mode'] = this.real_box_lb_mode;
+                this.$parent.virtual_port[this.vs_box_count-1].real_port[this.real_count-1]['monitor'] = this.real_box_monitor;
+
                 //this.$parent.virtual_port.push({'virtual_port': this.vs_box_port, 'real_count': this.real_count, 'real_port': this.real_port, 'sticky': this.sticky, 'dsr': this.dsr, 'ssl': this.ssl });
             },
             add_real: function () {
