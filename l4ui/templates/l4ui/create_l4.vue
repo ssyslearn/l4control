@@ -80,7 +80,7 @@
         vs_count: 1,
         input_vip: '',
         input_service_name: '',
-        virtual_port: [{'virtual_port': '', 'real_count': '', 'real_port': '', 'sticky': '', 'dsr': '', 'ssl': ''}]
+        virtual_port: [{'virtual_port': '', 'real_count': '', 'real_port': '', 'real_box_port': '', 'real_box_lb_mode': '', 'real_box_monitor':'' , 'sticky': '', 'dsr': '', 'ssl': ''}]
     }
 
     var assign_vip = new Vue({
@@ -96,12 +96,8 @@
     Vue.component('real-server-box', {
         data: function() {
             return {
-                real_box_port: '',
                 real_box_ip: '',
-                real_box_lb_mode: '',
-                real_box_monitor: '',
-                real_box_count: this.$parent.real_count,
-                real_box_dict: ''
+                real_box_count: this.$parent.real_count
             }
         },
         methods: {
@@ -111,30 +107,16 @@
                 //this.real_box_dict = {'port': this.real_box_port, 'ip': this.real_box_ip, 'lb_mode': this.real_box_lb, 'monitor': this.real_box_mon};
                 //alert(this.$parent.real_port[this.real_box_count-1]);
                 this.$parent.real_port[this.real_box_count-1]['ip'] = this.real_box_ip;
-                this.$parent.real_port[this.real_box_count-1]['port'] = this.real_box_port;
-                this.$parent.real_port[this.real_box_count-1]['lb_mode'] = this.real_box_lb_mode;
-                this.$parent.real_port[this.real_box_count-1]['monitor'] = this.real_box_monitor;
+                this.$parent.real_port[this.real_box_count-1]['port'] = this.$parent.real_box_port;
+                this.$parent.real_port[this.real_box_count-1]['lb_mode'] = this.$parent.real_box_lb_mode;
+                this.$parent.real_port[this.real_box_count-1]['monitor'] = this.$parent.real_box_monitor;
             }
         },
         template: '<div class="col-md-round-box"> ' +
-        '<div class="col-md-4">' +
+        '<div class="col-md-12">' +
         '<label class="label-subtitle">Real IP</label> ' +
         '<input v-model="real_box_ip" v-on:change="changed" type="text" placeholder="ex. 10.10.10.10" required="" class="form-control input-md">' +
         '</div> ' +
-        '<div class="col-md-2">' +
-        '<label class="label-subtitle">Port</label><input type="text" v-model="real_box_port" v-on:change="changed" placeholder="ex. 80" required="" class="form-control input-md"> ' +
-        '</div>' +
-        '<div class="col-md-2">' +
-        '<label class="label-subtitle">LB mode</label>' +
-        '<select v-model="real_box_lb_mode" v-on:change="changed"  class="form-control input-md" > ' +
-        '<option>Round Robin</option> <option>Least Connections</option> </select>' +
-        '</div> ' +
-        '<div class="col-md-3">' +
-        '<label class="label-subtitle">Monitor</label>' +
-        '<select v-model="real_box_monitor" v-on:change="changed"  class="form-control input-md" > ' +
-        '<option>http_healthcheck.jsp_skphok</option> <option>tcp</option> <option>tcp_half_open</option> <option>icmp</option> ' +
-        '<option>udp</option> </select>' +
-        '</div>' +
         '</div>'
     })
 
@@ -148,7 +130,10 @@
                 real_port: [{'port': '', 'ip': '', 'lb_mode': '', 'monitor': ''}],
                 sticky: '',
                 dsr: '',
-                ssl: ''
+                ssl: '',
+                real_box_port: '',
+                real_box_lb_mode: '',
+                real_box_monitor: ''
             }
         },
         methods: {
@@ -159,6 +144,9 @@
                 this.$parent.virtual_port[this.vs_box_count-1]['sticky'] = this.sticky;
                 this.$parent.virtual_port[this.vs_box_count-1]['dsr'] = this.dsr;
                 this.$parent.virtual_port[this.vs_box_count-1]['ssl'] = this.ssl;
+                this.$parent.virtual_port[this.vs_box_count-1]['real_box_port'] = this.real_box_port;
+                this.$parent.virtual_port[this.vs_box_count-1]['real_box_lb_mode'] = this.real_box_lb_mode;
+                this.$parent.virtual_port[this.vs_box_count-1]['real_box_monitor'] = this.real_box_monitor;
                 //this.$parent.virtual_port.push({'virtual_port': this.vs_box_port, 'real_count': this.real_count, 'real_port': this.real_port, 'sticky': this.sticky, 'dsr': this.dsr, 'ssl': this.ssl });
             },
             add_real: function () {
@@ -193,8 +181,26 @@
         '</div> ' +
         '<div class="col-md-8">' +
         '<div class="col-md-12">' +
+            '<div class="col-md-12">' +
         '<label class="label-title" id="label_real_server">Real Server</label> ' +
         '<button v-on:click="add_real" class="btn btn-xs btn-info">+</button>' +
+            '</div>'+
+            '<div class="col-md-12">' +
+            '<div class="col-md-2">' +
+        '<label class="label-subtitle">Port</label><input type="text" v-model="real_box_port" v-on:change="changed" placeholder="ex. 80" required="" class="form-control input-md"> ' +
+        '</div>' +
+        '<div class="col-md-2">' +
+        '<label class="label-subtitle">LB mode</label>' +
+        '<select v-model="real_box_lb_mode" v-on:change="changed"  class="form-control input-md" > ' +
+        '<option>Round Robin</option> <option>Least Connections</option> </select>' +
+        '</div> ' +
+        '<div class="col-md-3">' +
+        '<label class="label-subtitle">Monitor</label>' +
+        '<select v-model="real_box_monitor" v-on:change="changed"  class="form-control input-md" > ' +
+        '<option>http_healthcheck.jsp_skphok</option> <option>tcp</option> <option>tcp_half_open</option> <option>icmp</option> ' +
+        '<option>udp</option> </select>' +
+            '</div>' +
+        '</div>' +
         '<div v-bind:id="`real-box-${ index }`" v-for="index in real_count">' +
         '<real-server-box></real-server-box>' +
         '</div>' +
@@ -212,7 +218,7 @@
             add_vs: function (event) {
                 if (this.vs_count < 5) {
                     this.vs_count += 1;
-                    this.virtual_port.push({'virtual_port': '', 'real_count': '', 'real_port': '', 'sticky': '', 'dsr': '', 'ssl': ''});
+                    this.virtual_port.push({'virtual_port': '', 'real_count': '', 'real_port': '', 'real_box_port': '', 'real_box_lb_mode': '', 'real_box_monitor':'' , 'sticky': '', 'dsr': '', 'ssl': ''});
                 }
             }
         }

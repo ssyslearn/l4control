@@ -33,6 +33,12 @@
         padding-right: 5px;
 }
 
+.col-md-5 {
+        width: 40.4444444%;
+        padding-left: 0px;
+        padding-right: 5px;
+}
+
 
 .col-md-6 {
         width: 50%;
