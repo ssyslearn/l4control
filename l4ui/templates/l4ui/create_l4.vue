@@ -80,7 +80,7 @@
         vs_count: 1,
         input_vip: '',
         input_service_name: '',
-        virtual_port: [{'virtual_port': '', 'real_count': '', 'real_port': '', 'real_box_port': '', 'real_box_lb_mode': '', 'real_box_monitor':'' , 'sticky': '', 'dsr': '', 'ssl': ''}]
+        virtual_port: [{'virtual_port': '', 'real_count': '', 'real_server': '', 'real_box_port': '', 'real_box_lb_mode': '', 'real_box_monitor':'' , 'sticky': '', 'dsr': '', 'ssl': ''}]
     }
 
     var assign_vip = new Vue({
@@ -102,14 +102,14 @@
         },
         methods: {
             changed: function (){
-                //this.$parent.real_port[this.real_box_count-1] = { 'port': this.real_box_port, 'ip': this.real_box_ip, 'lb_mode': this.real_box_lb, 'monitor': this.real_box_mon};
+                //this.$parent.real_server[this.real_box_count-1] = { 'port': this.real_box_port, 'ip': this.real_box_ip, 'lb_mode': this.real_box_lb, 'monitor': this.real_box_mon};
                 //alert(this.$parent);
                 //this.real_box_dict = {'port': this.real_box_port, 'ip': this.real_box_ip, 'lb_mode': this.real_box_lb, 'monitor': this.real_box_mon};
-                //alert(this.$parent.real_port[this.real_box_count-1]);
-                this.$parent.real_port[this.real_box_count-1]['ip'] = this.real_box_ip;
-                this.$parent.real_port[this.real_box_count-1]['port'] = this.$parent.real_box_port;
-                this.$parent.real_port[this.real_box_count-1]['lb_mode'] = this.$parent.real_box_lb_mode;
-                this.$parent.real_port[this.real_box_count-1]['monitor'] = this.$parent.real_box_monitor;
+                //alert(this.$parent.real_server[this.real_box_count-1]);
+                this.$parent.real_server[this.real_box_count-1]['ip'] = this.real_box_ip;
+                this.$parent.real_server[this.real_box_count-1]['port'] = this.$parent.real_box_port;
+                this.$parent.real_server[this.real_box_count-1]['lb_mode'] = this.$parent.real_box_lb_mode;
+                this.$parent.real_server[this.real_box_count-1]['monitor'] = this.$parent.real_box_monitor;
             }
         },
         template: '<div> ' +
@@ -129,7 +129,7 @@
                 vs_box_count: this.$parent.vs_count,
                 vs_box_port: '',
                 real_count: 1,
-                real_port: [{'port': '', 'ip': '', 'lb_mode': '', 'monitor': ''}],
+                real_server: [{'port': '', 'ip': '', 'lb_mode': '', 'monitor': ''}],
                 sticky: '',
                 dsr: '',
                 ssl: '',
@@ -143,7 +143,7 @@
                 // passing to parent
                 this.$parent.virtual_port[this.vs_box_count-1]['virtual_port'] = this.vs_box_port;
                 this.$parent.virtual_port[this.vs_box_count-1]['real_count'] = this.real_count;
-                this.$parent.virtual_port[this.vs_box_count-1]['real_port'] = this.real_port;
+                this.$parent.virtual_port[this.vs_box_count-1]['real_server'] = this.real_server;
                 this.$parent.virtual_port[this.vs_box_count-1]['sticky'] = this.sticky;
                 this.$parent.virtual_port[this.vs_box_count-1]['dsr'] = this.dsr;
                 this.$parent.virtual_port[this.vs_box_count-1]['ssl'] = this.ssl;
@@ -152,17 +152,17 @@
                 this.$parent.virtual_port[this.vs_box_count-1]['real_box_monitor'] = this.real_box_monitor;
 
                 //passing to child
-                this.$parent.virtual_port[this.vs_box_count-1].real_port[this.real_count-1]['port'] = this.real_box_port;
-                this.$parent.virtual_port[this.vs_box_count-1].real_port[this.real_count-1]['lb_mode'] = this.real_box_lb_mode;
-                this.$parent.virtual_port[this.vs_box_count-1].real_port[this.real_count-1]['monitor'] = this.real_box_monitor;
+                this.$parent.virtual_port[this.vs_box_count-1].real_server[this.real_count-1]['port'] = this.real_box_port;
+                this.$parent.virtual_port[this.vs_box_count-1].real_server[this.real_count-1]['lb_mode'] = this.real_box_lb_mode;
+                this.$parent.virtual_port[this.vs_box_count-1].real_server[this.real_count-1]['monitor'] = this.real_box_monitor;
 
-                //this.$parent.virtual_port.push({'virtual_port': this.vs_box_port, 'real_count': this.real_count, 'real_port': this.real_port, 'sticky': this.sticky, 'dsr': this.dsr, 'ssl': this.ssl });
+                //this.$parent.virtual_port.push({'virtual_port': this.vs_box_port, 'real_count': this.real_count, 'real_server': this.real_server, 'sticky': this.sticky, 'dsr': this.dsr, 'ssl': this.ssl });
             },
             add_real: function () {
                 if (this.real_count < 3) {
                     this.real_count += 1;
                     this.$parent.virtual_port[this.vs_box_count-1]['real_count'] = this.real_count;
-                    this.real_port.push({'port': '', 'ip': '', 'lb_mode': '', 'monitor': ''});
+                    this.real_server.push({'port': '', 'ip': '', 'lb_mode': '', 'monitor': ''});
                 }
             }
         },
@@ -227,7 +227,7 @@
             add_vs: function (event) {
                 if (this.vs_count < 5) {
                     this.vs_count += 1;
-                    this.virtual_port.push({'virtual_port': '', 'real_count': '', 'real_port': '', 'real_box_port': '', 'real_box_lb_mode': '', 'real_box_monitor':'' , 'sticky': '', 'dsr': '', 'ssl': ''});
+                    this.virtual_port.push({'virtual_port': '', 'real_count': '', 'real_server': '', 'real_box_port': '', 'real_box_lb_mode': '', 'real_box_monitor':'' , 'sticky': '', 'dsr': '', 'ssl': ''});
                 }
             }
         }
@@ -240,7 +240,7 @@
                 display_virtual_port: this.$parent.virtual_port
             }
         },
-        template: '<div>virtual_port <br> ${ display_virtual_port }</div>'
+        template: '<div>virtual_server <br> ${ display_virtual_port }</div>'
     })
 
     var display_config = new Vue({
