@@ -170,6 +170,7 @@
         '<label class="label-subtitle">Real IP</label> ' +
         '<textarea v-model="real_server_ip" v-on:change="changed" name="content"  placeholder="ex. 10.10.10.10" required="" class="form-control input-md" cols="40" rows="4" >' +
         '</textarea>' +
+        '<p style="color: #d43f3a;"> <br> **  Real IP 작성 방법 <br> 단일 IP : x.x.x.x,[space] (space를 넣어야야 자동 줄바꿈) <br> 연속 IP : x.x.x.1~10 <br> comma로 구분하여 IP 입력할 경우 Virtual Server와 자동 매칭하여 L4를 생성함</p>' +
         '</div> ' +
         '</div>' +
         '</div>' +
