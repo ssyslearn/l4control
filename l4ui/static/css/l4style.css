@@ -1,10 +1,10 @@
 .row-mid {
-    margin-left: 300px;
-    margin-right: 300px;
+    margin-left: 100px;
+    margin-right: 100px;
 }
 .row-mid row-mid {
-    margin-left: 300px;
-    margin-right: 300px;
+    margin-left: 100px;
+    margin-right: 100px;
 }
 
 .col-md-12 {
@@ -34,7 +34,7 @@
 }
 
 .col-md-5 {
-        width: 40.4444444%;
+        width: 38.888888%;
         padding-left: 0px;
         padding-right: 5px;
 }
