@@ -31,7 +31,7 @@
                 <div class="col-md-8">
                     <input v-model="input_service_name" type="text"  placeholder="서비스명을 입력하세요" required="" class="form-control input-lg" >
                     <!--<span class="label-svctitle" v-for="index in vs_count" v-model="virtual_port[0]">-->
-                    <span class="label-svctitle" v-for="index in virtual_port">
+                    <span class="label-svctitle" v-for="index in virtual_port_list">
                           <!--v_${ input_vip }_${ input_service_name }_${ port },-->
                           v_${ input_vip }_${ input_service_name }_${ index.virtual_port },
                       </span>
@@ -42,7 +42,7 @@
                 <label class="label-title">Virtual Server</label>
                 <button v-on:click="add_vs" class="btn btn-xs btn-info">+</button>
                 <div>
-                    <virtual-server-box v-bind:id="`vs-box-${ index }`" v-for="(vs,index) in virtual_port" v-on:delete-vs="delete_this_vs(index)"></virtual-server-box>
+                    <virtual-server-box v-bind:id="`vs-box-${ index }`" v-for="(vs,index) in virtual_port_list" v-on:delete-vs="delete_this_vs(index)"></virtual-server-box>
                 </div>
             </div>
         </div>
@@ -72,7 +72,7 @@
         vs_count: 1,
         input_vip: '',
         input_service_name: '',
-        virtual_port: [{'virtual_port': '', 'real_count': '', 'real_server_ip': '', 'real_server_port': '', 'real_server_lb_mode': '', 'real_server_monitor':'' , 'sticky': '', 'dsr': '', 'ssl': ''}],
+        virtual_port_list: [{'virtual_port': '', 'real_count': '', 'real_server_ip': '', 'real_server_port': '', 'real_server_lb_mode': '', 'real_server_monitor':'' , 'sticky': '', 'dsr': '', 'ssl': ''}],
         seen : false
     }
 
@@ -104,15 +104,15 @@
         methods: {
             changed: function (){
                 // passing to parent
-                this.$parent.virtual_port[this.vs_box_count-1]['virtual_port'] = this.virtual_port;
-                this.$parent.virtual_port[this.vs_box_count-1]['real_count'] = this.real_count;
-                this.$parent.virtual_port[this.vs_box_count-1]['sticky'] = this.sticky;
-                this.$parent.virtual_port[this.vs_box_count-1]['dsr'] = this.dsr;
-                this.$parent.virtual_port[this.vs_box_count-1]['ssl'] = this.ssl;
-                this.$parent.virtual_port[this.vs_box_count-1]['real_server_port'] = this.real_server_port;
-                this.$parent.virtual_port[this.vs_box_count-1]['real_server_lb_mode'] = this.real_server_lb_mode;
-                this.$parent.virtual_port[this.vs_box_count-1]['real_server_monitor'] = this.real_server_monitor;
-                this.$parent.virtual_port[this.vs_box_count-1]['real_server_ip'] = this.real_server_ip;
+                this.$parent.virtual_port_list[this.vs_box_count-1]['virtual_port'] = this.virtual_port;
+                this.$parent.virtual_port_list[this.vs_box_count-1]['real_count'] = this.real_count;
+                this.$parent.virtual_port_list[this.vs_box_count-1]['sticky'] = this.sticky;
+                this.$parent.virtual_port_list[this.vs_box_count-1]['dsr'] = this.dsr;
+                this.$parent.virtual_port_list[this.vs_box_count-1]['ssl'] = this.ssl;
+                this.$parent.virtual_port_list[this.vs_box_count-1]['real_server_port'] = this.real_server_port;
+                this.$parent.virtual_port_list[this.vs_box_count-1]['real_server_lb_mode'] = this.real_server_lb_mode;
+                this.$parent.virtual_port_list[this.vs_box_count-1]['real_server_monitor'] = this.real_server_monitor;
+                this.$parent.virtual_port_list[this.vs_box_count-1]['real_server_ip'] = this.real_server_ip;
             },
             ssl_upload: function (){
               alert("SSL 인증서 업로드 구현 예정");
@@ -186,7 +186,7 @@
             add_vs: function (event) {
                 if (this.vs_count < 5) {
                     this.vs_count += 1;
-                    this.virtual_port.push({'virtual_port': '', 'real_count': '', 'real_server_ip': '', 'real_server_port': '', 'real_server_lb_mode': '', 'real_server_monitor':'' , 'sticky': '', 'dsr': '', 'ssl': ''});
+                    this.virtual_port_list.push({'virtual_port': '', 'real_count': '', 'real_server_ip': '', 'real_server_port': '', 'real_server_lb_mode': '', 'real_server_monitor':'' , 'sticky': '', 'dsr': '', 'ssl': ''});
                 }
             },
             delete_this_vs: function(index) {
@@ -199,7 +199,7 @@
 //                    this.$children[i].$data = this.virtual_port[i];
 //                }
                 //this.$children.splice(index, 1);
-                this.virtual_port.splice(index, 1);
+                this.virtual_port_list.splice(index, 1);
 //                var len = this.virtual_port.length;
 //                for(var i=0; i<len; i++){
 //                    this.$children[i]['vs_port'] = this.virtual_port[i]['virtual_port'];
@@ -207,9 +207,9 @@
 //                        this.$children[i][el] = this.virtual_port[i][el];
 //                    }
 //                }
-                for(var idx in this.virtual_port){
-                    for(var el in this.virtual_port[idx]){
-                        this.$children[idx][el] = this.virtual_port[idx][el];
+                for(var idx in this.virtual_port_list){
+                    for(var el in this.virtual_port_list[idx]){
+                        this.$children[idx][el] = this.virtual_port_list[idx][el];
                     }
                 }
             }
@@ -217,7 +217,7 @@
     })
 
     Vue.component('display-config', {
-        template: '<div> v_${ this.$parent.input_vip }_${ this.$parent.input_service_name } <br> ${ this.$parent.virtual_port }</div>'
+        template: '<div> v_${ this.$parent.input_vip }_${ this.$parent.input_service_name } <br> ${ this.$parent.virtual_port_list }</div>'
     })
 
     var display_config = new Vue({
@@ -229,7 +229,7 @@
                 this.seen = false;
                 this.seen = true;
                 for (var i=0; i<this.vs_count; i++) {
-                    var ip_set = this.virtual_port[i]['real_server_ip'];
+                    var ip_set = this.virtual_port_list[i]['real_server_ip'];
                     if(typeof(ip_set) == "string") {
                         var ip_list = ip_set.split(",");
                         var return_ip_list = [];
@@ -249,8 +249,8 @@
                             }
                         }
                         console.log(return_ip_list);
-                        this.virtual_port[i]['real_server_ip'] = return_ip_list;
-                        this.virtual_port[i]['real_count'] = return_ip_list.length;
+                        this.virtual_port_list[i]['real_server_ip'] = return_ip_list;
+                        this.virtual_port_list[i]['real_count'] = return_ip_list.length;
                     }
                 }
             }
