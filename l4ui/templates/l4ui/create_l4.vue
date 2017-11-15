@@ -41,8 +41,8 @@
             <div class="col-md-12">
                 <label class="label-title">Virtual Server</label>
                 <button v-on:click="add_vs" class="btn btn-xs btn-info">+</button>
-                <div v-bind:id="`vs-box-${ index }`" v-for="index in vs_count">
-                    <virtual-server-box></virtual-server-box>
+                <div>
+                    <virtual-server-box v-bind:id="`vs-box-${ index }`" v-for="(vs,index) in virtual_port" v-on:delete-vs="delete_this_vs(index)"></virtual-server-box>
                 </div>
             </div>
         </div>
@@ -51,13 +51,12 @@
             <button class="btn btn-success btn-lg" v-on:click="click_display">확인</button>
             <input type="button" class="btn btn-lg btn-success" value="생성" disabled/>
             <div class="col-md-12" align="left"><br>
-                <pre>
+                <pre v-if="seen">
                     <display-config></display-config>
                 </pre>
             </div>
         </div>
     </div>
-
 </div>
 
 <script src="/static/js/jquery/1.11.3/jquery.min.js"></script>
@@ -73,7 +72,8 @@
         vs_count: 1,
         input_vip: '',
         input_service_name: '',
-        virtual_port: [{'virtual_port': '', 'real_count': '', 'real_server_ip': '', 'real_server_port': '', 'real_server_lb_mode': '', 'real_server_monitor':'' , 'sticky': '', 'dsr': '', 'ssl': ''}]
+        virtual_port: [{'virtual_port': '', 'real_count': '', 'real_server_ip': '', 'real_server_port': '', 'real_server_lb_mode': '', 'real_server_monitor':'' , 'sticky': '', 'dsr': '', 'ssl': ''}],
+        seen : false
     }
 
     var assign_vip = new Vue({
@@ -86,12 +86,11 @@
         }
     })
 
-
     Vue.component('virtual-server-box', {
         data: function() {
             return {
                 vs_box_count: this.$parent.vs_count,
-                vs_port: '',
+                virtual_port: '',
                 real_count: 1,
                 real_server_ip: '',
                 sticky: '사용 안함',
@@ -105,27 +104,30 @@
         methods: {
             changed: function (){
                 // passing to parent
-                this.$parent.virtual_port[this.vs_box_count-1]['virtual_port'] = this.vs_port;
+                this.$parent.virtual_port[this.vs_box_count-1]['virtual_port'] = this.virtual_port;
                 this.$parent.virtual_port[this.vs_box_count-1]['real_count'] = this.real_count;
-                this.$parent.virtual_port[this.vs_box_count-1]['real_server_ip'] = this.real_server_ip;
                 this.$parent.virtual_port[this.vs_box_count-1]['sticky'] = this.sticky;
                 this.$parent.virtual_port[this.vs_box_count-1]['dsr'] = this.dsr;
                 this.$parent.virtual_port[this.vs_box_count-1]['ssl'] = this.ssl;
                 this.$parent.virtual_port[this.vs_box_count-1]['real_server_port'] = this.real_server_port;
                 this.$parent.virtual_port[this.vs_box_count-1]['real_server_lb_mode'] = this.real_server_lb_mode;
                 this.$parent.virtual_port[this.vs_box_count-1]['real_server_monitor'] = this.real_server_monitor;
+                this.$parent.virtual_port[this.vs_box_count-1]['real_server_ip'] = this.real_server_ip;
             },
             ssl_upload: function (){
               alert("SSL 인증서 업로드 구현 예정");
+            },
+            delete_click: function (){
+                this.$emit('delete-vs');
             }
         },
         template: '<div class="col-md-round-box">' +
         '<div class="col-md-4"> ' +
-        '<div class="col-md-12"><label class="label-title">Virtual Port</label></div> ' +
+        '<div class="col-md-12"><label class="label-title">Virtual Port</label>  <button v-on:click="delete_click" class="btn btn-xs btn-danger">x</button></div> ' +
         '<div class="col-md-round-box">' +
         '<div class="col-md-12-inner" >' +
         '<label class="label-subtitle">Port</label> ' +
-        '<input type="text" placeholder="ex. 80" required="" class="form-control input-lg" v-model="vs_port" v-on:change="changed">' +
+        '<input type="text" placeholder="ex. 80" required="" class="form-control input-lg" v-model="virtual_port" v-on:change="changed">' +
         '</div> ' +
         '<div class="col-md-12-inner">' +
         '<label class="label-subtitle">Sticky 사용 여부</label><select v-model="sticky" v-on:change="changed" class="form-control input-md"> ' +
@@ -186,6 +188,30 @@
                     this.vs_count += 1;
                     this.virtual_port.push({'virtual_port': '', 'real_count': '', 'real_server_ip': '', 'real_server_port': '', 'real_server_lb_mode': '', 'real_server_monitor':'' , 'sticky': '', 'dsr': '', 'ssl': ''});
                 }
+            },
+            delete_this_vs: function(index) {
+                //this.vs_count -= 1;
+                //this.$delete(this.$children, index);
+                //this.$delete(this.virtual_port, index);
+                //this.virtual_port[index] = splice(index, 1);
+//                this.virtual_port.splice(index, 1);
+//                for(var i =0; i<this.virtual_port.length; i++){
+//                    this.$children[i].$data = this.virtual_port[i];
+//                }
+                //this.$children.splice(index, 1);
+                this.virtual_port.splice(index, 1);
+//                var len = this.virtual_port.length;
+//                for(var i=0; i<len; i++){
+//                    this.$children[i]['vs_port'] = this.virtual_port[i]['virtual_port'];
+//                    for(var el in this.virtual_port) {
+//                        this.$children[i][el] = this.virtual_port[i][el];
+//                    }
+//                }
+                for(var idx in this.virtual_port){
+                    for(var el in this.virtual_port[idx]){
+                        this.$children[idx][el] = this.virtual_port[idx][el];
+                    }
+                }
             }
         }
     })
@@ -198,9 +224,39 @@
         el: '#display_config',
         data: data,
         methods: {
-            click_display: function (event) {
-                alert("Click display");
+           click_display: function (event) {
+                this.seen = false;
+                this.seen = false;
+                this.seen = true;
+                for (var i=0; i<this.vs_count; i++) {
+                    var ip_set = this.virtual_port[i]['real_server_ip'];
+                    if(typeof(ip_set) == "string") {
+                        var ip_list = ip_set.split(",");
+                        var return_ip_list = [];
+                        for (var ip in ip_list) {
+                            if (ip_list[ip].split("~").length > 1) {
+                                var prefix_ip = ip_list[ip].split("~")[0].split(".")[0] + "." + ip_list[ip].split("~")[0].split(".")[1] + "." + ip_list[ip].split("~")[0].split(".")[2] + ".";
+                                if ((ip_list[ip].split("~")[1] - ip_list[ip].split("~")[0].split(".")[3]) < 1){
+                                    alert(ip_list[ip] + "은 올바르지 않은 IP 대역입니다. 확인 바랍니다.");
+                                    break;
+                                }
+                                for (var j = 0; j < ip_list[ip].split("~")[1] - ip_list[ip].split("~")[0].split(".")[3] + 1; j++) {
+                                    return_ip_list.push((prefix_ip + String(Number(ip_list[ip].split("~")[0].split(".")[3]) + Number(j))).trim());
+                                }
+                            }
+                            else {
+                                return_ip_list.push(ip_list[ip].trim());
+                            }
+                        }
+                        console.log(return_ip_list);
+                        this.virtual_port[i]['real_server_ip'] = return_ip_list;
+                        this.virtual_port[i]['real_count'] = return_ip_list.length;
+                    }
+                }
             }
+        },
+        created: function(){
+            //this.data['seen'] = false;
         }
     })
 </script>
