@@ -67,6 +67,13 @@
 
 <script>
     Vue.options.delimiters = ['${', '}'];
+    axios.defaults.baseURL = 'http://127.0.0.1';
+    //    axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+    var config = {
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    };
 
     var data = {
         vs_count: 1,
@@ -81,12 +88,14 @@
         data: data,
         methods: {
             assign: function (event) {
-                axios.post('http://l4check.skplanet.com/check.php', {
-                    ip: '${ this.input_vip }'
+                axios.get('/l4check', {
+                    params: {
+                        ip: this.input_vip
+                    }
                 })
                     .then(function (response) {
                         console.log(response);
-                        alert(response);
+                        alert(response.data);
                     })
                     .catch(function (error) {
                         console.log(error);
@@ -125,7 +134,7 @@
                 this.$parent.virtual_port_list[this.vs_box_count-1]['real_server_ip'] = this.real_server_ip;
             },
             ssl_upload: function (){
-              alert("SSL 인증서 업로드 구현 예정");
+                alert("SSL 인증서 업로드 구현 예정");
             },
             delete_click: function (){
                 this.$emit('delete-vs');
@@ -219,7 +228,7 @@
         el: '#display_config',
         data: data,
         methods: {
-           click_display: function (event) {
+            click_display: function (event) {
                 this.seen = true;
                 for (var i=0; i<this.vs_count; i++) {
                     var ip_set = this.virtual_port_list[i]['real_server_ip'];
