@@ -190,23 +190,8 @@
                 }
             },
             delete_this_vs: function(index) {
-                //this.vs_count -= 1;
-                //this.$delete(this.$children, index);
-                //this.$delete(this.virtual_port, index);
-                //this.virtual_port[index] = splice(index, 1);
-//                this.virtual_port.splice(index, 1);
-//                for(var i =0; i<this.virtual_port.length; i++){
-//                    this.$children[i].$data = this.virtual_port[i];
-//                }
-                //this.$children.splice(index, 1);
                 this.virtual_port_list.splice(index, 1);
-//                var len = this.virtual_port.length;
-//                for(var i=0; i<len; i++){
-//                    this.$children[i]['vs_port'] = this.virtual_port[i]['virtual_port'];
-//                    for(var el in this.virtual_port) {
-//                        this.$children[i][el] = this.virtual_port[i][el];
-//                    }
-//                }
+                this.vs_count -= 1;
                 for(var idx in this.virtual_port_list){
                     for(var el in this.virtual_port_list[idx]){
                         this.$children[idx][el] = this.virtual_port_list[idx][el];
@@ -225,8 +210,6 @@
         data: data,
         methods: {
            click_display: function (event) {
-                this.seen = false;
-                this.seen = false;
                 this.seen = true;
                 for (var i=0; i<this.vs_count; i++) {
                     var ip_set = this.virtual_port_list[i]['real_server_ip'];
