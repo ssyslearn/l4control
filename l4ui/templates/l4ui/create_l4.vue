@@ -63,7 +63,7 @@
 <script src="/static/js/jquery.redirect.js"></script>
 <link href="/static/css/l4style.css" rel="stylesheet" type="text/css">
 <script src="/static/js/vue.js"></script>
-
+<script src="/static/js/axios.min.js"></script>
 
 <script>
     Vue.options.delimiters = ['${', '}'];
@@ -81,7 +81,17 @@
         data: data,
         methods: {
             assign: function (event) {
-                alert('IP 할당 개발 예정')
+                axios.post('http://l4check.skplanet.com/check.php', {
+                    ip: '${ this.input_vip }'
+                })
+                    .then(function (response) {
+                        console.log(response);
+                        alert(response);
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                        alert(error);
+                    });
             }
         }
     })
