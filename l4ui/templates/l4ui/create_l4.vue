@@ -29,7 +29,7 @@
                     <label class="label-title">서비스 명</label>
                 </div>
                 <div class="col-md-8">
-                    <input v-model="input_service_name" type="text"  placeholder="서비스명을 입력하세요" required="" class="form-control input-lg" >
+                    <input :disabled="writable == false" v-model="input_service_name" type="text"  placeholder="서비스명을 입력하세요" required="" class="form-control input-lg" >
                     <!--<span class="label-svctitle" v-for="index in vs_count" v-model="virtual_port[0]">-->
                     <span class="label-svctitle" v-for="index in virtual_port_list">
                           <!--v_${ input_vip }_${ input_service_name }_${ port },-->
@@ -68,7 +68,7 @@
 <script>
     Vue.options.delimiters = ['${', '}'];
     axios.defaults.baseURL = 'http://127.0.0.1';
-    //    axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+
     var config = {
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
@@ -80,6 +80,7 @@
         input_vip: '',
         input_service_name: '',
         virtual_port_list: [{'virtual_port': '', 'real_count': '', 'real_server_ip': '', 'real_server_port': '', 'real_server_lb_mode': '', 'real_server_monitor':'' , 'sticky': '', 'dsr': '', 'ssl': ''}],
+        writable: false,
         seen : false
     }
 
@@ -93,14 +94,17 @@
                         ip: this.input_vip
                     }
                 })
-                    .then(function (response) {
-                        console.log(response);
-                        alert(response.data);
-                    })
-                    .catch(function (error) {
-                        console.log(error);
-                        alert(error);
-                    });
+                .then(function (response) {
+//                        console.log(response.data);
+                    alert(response.data.data);
+                    if (response.data.status == "200"){
+                        virtual_server.writable_true();
+                    }
+                })
+                .catch(function (error) {
+//                        console.log(error);
+                    alert(error);
+                });
             }
         }
     })
@@ -117,7 +121,8 @@
                 ssl: '사용 안함',
                 real_server_port: '',
                 real_server_lb_mode: 'Round Robin',
-                real_server_monitor: '사용 안함'
+                real_server_monitor: '사용 안함',
+                writable: this.$parent.writable
             }
         },
         methods: {
@@ -146,21 +151,21 @@
         '<div class="col-md-round-box">' +
         '<div class="col-md-12-inner" >' +
         '<label class="label-subtitle">Port</label> ' +
-        '<input type="text" placeholder="ex. 80" required="" class="form-control input-lg" v-model="virtual_port" v-on:change="changed">' +
+        '<input :disabled="writable == false" type="text" placeholder="ex. 80" required="" class="form-control input-lg" v-model="virtual_port" v-on:change="changed">' +
         '</div> ' +
         '<div class="col-md-12-inner">' +
-        '<label class="label-subtitle">Sticky 사용 여부</label><select v-model="sticky" v-on:change="changed" class="form-control input-md"> ' +
+        '<label class="label-subtitle">Sticky 사용 여부</label><select :disabled="writable == false" v-model="sticky" v-on:change="changed" class="form-control input-md"> ' +
         '<option>사용 안함</option><option>300초</option> <option>600초</option> <option>900초</option> <option>1800초</option> ' +
         '</select>' +
         '</div>' +
         '<div class="col-md-12-inner"><label class="label-subtitle">DSR 사용 여부</label> ' +
-        '<select v-model="dsr" v-on:change="changed" class="form-control input-md"> <option>사용 안함</option> <option>사용</option> </select>' +
+        '<select :disabled="writable == false" v-model="dsr" v-on:change="changed" class="form-control input-md"> <option>사용 안함</option> <option>사용</option> </select>' +
         '</div> ' +
         '<div class="col-md-12-inner">' +
         '<label class="label-subtitle">SSL 인증서 사용 여부 </label><br>' +
-        '<input v-on:change="changed" type="radio" id="ssl_yes" value="사용" v-model="ssl" /> ' +
+        '<input :disabled="writable == false" v-on:change="changed" type="radio" id="ssl_yes" value="사용" v-model="ssl" /> ' +
         '<label for="ssl_yes">사용</label> ' +
-        '<input v-on:change="changed" type="radio" id="ssl_no" value="사용 안함" v-model="ssl" /> ' +
+        '<input :disabled="writable == false" v-on:change="changed" type="radio" id="ssl_no" value="사용 안함" v-model="ssl" /> ' +
         '<label for="ssl_no">사용 안함</label> ' +
         '<button v-on:click="ssl_upload" class="btn btn-sm btn-info" :disabled="ssl != \'사용\'">SSL 인증서 업로드</button>' +
         '</div>' +
@@ -173,23 +178,23 @@
         '</div>'+
         '<div class="col-md-12">' +
         '<div class="col-md-2">' +
-        '<label class="label-subtitle">Port</label><input type="text" v-model="real_server_port" v-on:change="changed" placeholder="ex. 80" required="" class="form-control input-md"> ' +
+        '<label class="label-subtitle">Port</label><input :disabled="writable == false" type="text" v-model="real_server_port" v-on:change="changed" placeholder="ex. 80" required="" class="form-control input-md"> ' +
         '</div>' +
         '<div class="col-md-5">' +
         '<label class="label-subtitle">LB mode</label>' +
-        '<select v-model="real_server_lb_mode" v-on:change="changed"  class="form-control input-md" > ' +
+        '<select :disabled="writable == false" v-model="real_server_lb_mode" v-on:change="changed"  class="form-control input-md" > ' +
         '<option>Round Robin</option> <option>Least Connections</option> </select>' +
         '</div> ' +
         '<div class="col-md-5">' +
-        '<label class="label-subtitle">Monitor</label>' +
-        '<select v-model="real_server_monitor" v-on:change="changed"  class="form-control input-md" > ' +
+        '<label  class="label-subtitle">Monitor</label>' +
+        '<select :disabled="writable == false" v-model="real_server_monitor" v-on:change="changed"  class="form-control input-md" > ' +
         '<option>사용 안함</option><option>http_healthcheck.jsp_skphok</option> <option>tcp</option> <option>tcp_half_open</option> <option>icmp</option> ' +
         '<option>udp</option> </select>' +
         '</div>' +
         '</div>' +
         '<div class="col-md-12">' +
         '<label class="label-subtitle">Real IP</label> ' +
-        '<textarea v-model="real_server_ip" v-on:change="changed" name="content"  placeholder="ex. 10.10.10.10" required="" class="form-control input-md" cols="40" rows="4" >' +
+        '<textarea :disabled="writable == false" v-model="real_server_ip" v-on:change="changed" name="content"  placeholder="ex. 10.10.10.10" required="" class="form-control input-md" cols="40" rows="4" >' +
         '</textarea>' +
         '<p style="color: #d43f3a;"> <br> **  Real IP 작성 방법 <br> 단일 IP : x.x.x.x,[space] (space를 넣어야 자동 줄바꿈) <br> 연속 IP : x.x.x.1~10 <br> comma로 구분하여 IP 입력할 경우 Virtual Server와 자동 매칭하여 L4를 생성함</p>' +
         '</div> ' +
@@ -215,6 +220,12 @@
                     for(var el in this.virtual_port_list[idx]){
                         this.$children[idx][el] = this.virtual_port_list[idx][el];
                     }
+                }
+            },
+            writable_true: function(){
+                this.writable = true;
+                for(var idx in this.virtual_port_list){
+                    this.$children[idx].writable = true;
                 }
             }
         }

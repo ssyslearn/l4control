@@ -27,9 +27,13 @@ def l4check(request):
         return HttpResponse("정상적인 IP를 입력해주세요.")
 
     if vip_list != []:
-        return HttpResponse("해당 Virtual IP는 사용 불가능 합니다.")
+        return HttpResponse(json.dumps({"data": "[WARNING] 해당 Virtual IP는 사용 불가능 합니다.", "status": "500"}))
     else:
-        return HttpResponse("해당 Virtual IP는 사용 가능 합니다.", content_type="application/json")
+        return HttpResponse(json.dumps({"data": "[OK] 해당 Virtual IP는 사용 가능 합니다.", "status": "200"}))
+
+
+# @login_required(login_url='/login')
+# def l4map(request):
 
 
 @login_required(login_url='/login')
