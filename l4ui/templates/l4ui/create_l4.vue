@@ -95,14 +95,12 @@
                     }
                 })
                 .then(function (response) {
-//                        console.log(response.data);
                     alert(response.data.data);
                     if (response.data.status == "200"){
                         virtual_server.writable_true();
                     }
                 })
                 .catch(function (error) {
-//                        console.log(error);
                     alert(error);
                 });
             }
@@ -266,6 +264,20 @@
                         this.virtual_port_list[i]['real_count'] = return_ip_list.length;
                     }
                 }
+
+                axios.get('/l4map', {
+                    params: {
+                        ip: this.input_vip
+                    }
+                })
+                .then(function (response) {
+                    console.log(response.data);
+                    alert(response.data);
+                })
+                .catch(function (error) {
+                    alert(error);
+                });
+
             }
         },
         created: function(){
