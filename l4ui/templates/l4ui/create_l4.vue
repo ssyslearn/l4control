@@ -48,10 +48,10 @@
         </div>
 
         <div id="display_config" class="col-md-12" align="right">
-            <button class="btn btn-success btn-lg" v-on:click="click_display">확인</button>
-            <input type="button" class="btn btn-lg btn-success" value="생성" disabled/>
+            <button v-if="confirm_btn_seen" class="btn btn-success btn-lg" v-on:click="click_display">확인</button>
+            <input :disabled="create_btn_seen == false" type="button" class="btn btn-lg btn-success" value="생성" />
             <div class="col-md-12" align="left"><br>
-                <pre v-if="seen">
+                <pre v-if="display_seen">
                     <display-config></display-config>
                 </pre>
             </div>
@@ -78,10 +78,13 @@
     var data = {
         vs_count: 1,
         input_vip: '',
+        matched_dev: '',
         input_service_name: '',
         virtual_port_list: [{'virtual_port': '', 'real_count': '', 'real_server_ip': '', 'real_server_port': '', 'real_server_lb_mode': '', 'real_server_monitor':'' , 'sticky': '', 'dsr': '', 'ssl': ''}],
         writable: false,
-        seen : false
+        display_seen : false,
+        confirm_btn_seen: false,
+        create_btn_seen: false
     }
 
     var assign_vip = new Vue({
@@ -89,7 +92,7 @@
         data: data,
         methods: {
             assign: function (event) {
-                axios.get('/l4check', {
+                axios.get('/verify_vip', {
                     params: {
                         ip: this.input_vip
                     }
@@ -99,10 +102,28 @@
                     if (response.data.status == "200"){
                         virtual_server.writable_true();
                     }
+                    else{
+                        virtual_server.writable_false();
+                    }
                 })
                 .catch(function (error) {
                     alert(error);
                 });
+
+                axios.get('/l4map', {
+                    params: {
+                        ip: this.input_vip
+                    }
+                })
+                .then(function (response) {
+                    assign_vip.set_matched_dev(response.data);
+                })
+                .catch(function (error) {
+                    alert(error);
+                });
+            },
+            set_matched_dev: function(arg){
+                this.matched_dev = arg;
             }
         }
     })
@@ -114,12 +135,12 @@
                 virtual_port: '',
                 real_count: 1,
                 real_server_ip: '',
-                sticky: '사용 안함',
-                dsr: '사용 안함',
-                ssl: '사용 안함',
+                sticky: 'No',
+                dsr: 'No',
+                ssl: 'No',
                 real_server_port: '',
                 real_server_lb_mode: 'Round Robin',
-                real_server_monitor: '사용 안함',
+                real_server_monitor: 'No',
                 writable: this.$parent.writable
             }
         },
@@ -153,18 +174,18 @@
         '</div> ' +
         '<div class="col-md-12-inner">' +
         '<label class="label-subtitle">Sticky 사용 여부</label><select :disabled="writable == false" v-model="sticky" v-on:change="changed" class="form-control input-md"> ' +
-        '<option>사용 안함</option><option>300초</option> <option>600초</option> <option>900초</option> <option>1800초</option> ' +
+        '<option>No</option><option>300초</option> <option>600초</option> <option>900초</option> <option>1800초</option> ' +
         '</select>' +
         '</div>' +
         '<div class="col-md-12-inner"><label class="label-subtitle">DSR 사용 여부</label> ' +
-        '<select :disabled="writable == false" v-model="dsr" v-on:change="changed" class="form-control input-md"> <option>사용 안함</option> <option>사용</option> </select>' +
+        '<select :disabled="writable == false" v-model="dsr" v-on:change="changed" class="form-control input-md"> <option>No</option> <option>Yes</option> </select>' +
         '</div> ' +
         '<div class="col-md-12-inner">' +
         '<label class="label-subtitle">SSL 인증서 사용 여부 </label><br>' +
         '<input :disabled="writable == false" v-on:change="changed" type="radio" id="ssl_yes" value="사용" v-model="ssl" /> ' +
-        '<label for="ssl_yes">사용</label> ' +
-        '<input :disabled="writable == false" v-on:change="changed" type="radio" id="ssl_no" value="사용 안함" v-model="ssl" /> ' +
-        '<label for="ssl_no">사용 안함</label> ' +
+        '<label for="ssl_yes">Yes</label> ' +
+        '<input :disabled="writable == false" v-on:change="changed" type="radio" id="ssl_no" value="No" v-model="ssl" /> ' +
+        '<label for="ssl_no">No</label> ' +
         '<button v-on:click="ssl_upload" class="btn btn-sm btn-info" :disabled="ssl != \'사용\'">SSL 인증서 업로드</button>' +
         '</div>' +
         '</div>' +
@@ -186,7 +207,7 @@
         '<div class="col-md-5">' +
         '<label  class="label-subtitle">Monitor</label>' +
         '<select :disabled="writable == false" v-model="real_server_monitor" v-on:change="changed"  class="form-control input-md" > ' +
-        '<option>사용 안함</option><option>http_healthcheck.jsp_skphok</option> <option>tcp</option> <option>tcp_half_open</option> <option>icmp</option> ' +
+        '<option>No</option><option>http_healthcheck.jsp_skphok</option> <option>tcp</option> <option>tcp_half_open</option> <option>icmp</option> ' +
         '<option>udp</option> </select>' +
         '</div>' +
         '</div>' +
@@ -225,12 +246,23 @@
                 for(var idx in this.virtual_port_list){
                     this.$children[idx].writable = true;
                 }
+                this.confirm_btn_seen = true;
+            },
+            writable_false: function(){
+                this.writable = false;
+                for(var idx in this.virtual_port_list){
+                    this.$children[idx].writable = false;
+                }
+                this.matched_dev = '';
+                this.display_seen = false;
+                this.confirm_btn_seen = false;
+                this.create_btn_seen = false;
             }
         }
     })
 
     Vue.component('display-config', {
-        template: '<div> v_${ this.$parent.input_vip }_${ this.$parent.input_service_name } <br> ${ this.$parent.virtual_port_list }</div>'
+        template: '<div> matched_dev : ${ this.$parent.matched_dev }, <br> v_${ this.$parent.input_vip }_${ this.$parent.input_service_name } : ${ this.$parent.virtual_port_list }</div>'
     })
 
     var display_config = new Vue({
@@ -238,7 +270,7 @@
         data: data,
         methods: {
             click_display: function (event) {
-                this.seen = true;
+                this.display_seen = true;
                 for (var i=0; i<this.vs_count; i++) {
                     var ip_set = this.virtual_port_list[i]['real_server_ip'];
                     if(typeof(ip_set) == "string") {
@@ -265,18 +297,19 @@
                     }
                 }
 
-                axios.get('/l4map', {
-                    params: {
-                        ip: this.input_vip
-                    }
-                })
-                .then(function (response) {
-                    console.log(response.data);
-                    alert(response.data);
-                })
-                .catch(function (error) {
-                    alert(error);
-                });
+//                axios.get('/l4map', {
+//                    params: {
+//                        ip: this.input_vip
+//                    }
+//                })
+//                .then(function (response) {
+//                    //console.log(response.data);
+//                    //alert(response.data);
+//                })
+//                .catch(function (error) {
+//                    alert(error);
+//                });
+                this.create_btn_seen = true;
 
             }
         },

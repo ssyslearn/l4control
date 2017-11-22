@@ -14,9 +14,13 @@ L4_URL = ['http://c-php-iapi.skplanet.com/l4check/', 'http://b-php-iapi.skplanet
 def create_l4(request):
     return render(request, 'l4ui/create_l4.vue', {})
 
+@login_required(login_url='/login')
+def modify_l4(request):
+    return render(request, 'l4ui/modify_l4.vue', {})
+
 
 @login_required(login_url='/login')
-def l4check(request):
+def verify_vip(request):
     for url in L4_URL:
         BASE_URL = url + 'check_json.php?'
         try:
@@ -33,7 +37,8 @@ def l4check(request):
         except:
             continue
 
-        if vip_list != []:
+        #if vip_list != [] or len(vip_list) == 0:
+        if vip_list != [] or len(vip_list) != 0:
             return HttpResponse(json.dumps({"data": "[WARNING] 해당 Virtual IP는 사용 불가능 합니다.", "status": "404"}))
         else:
             return HttpResponse(json.dumps({"data": "[OK] 해당 Virtual IP는 사용 가능 합니다.", "status": "200"}))
@@ -69,6 +74,35 @@ def l4map(request):
             continue
 
     return HttpResponse("매칭되는 L4 장비가 없습니다.")
+
+
+@login_required(login_url='/login')
+def search_l4check(request):
+    for url in L4_URL:
+        BASE_URL = url + 'check_json.php?'
+        l4_dict = {}
+        try:
+            r = requests.get(BASE_URL + 'ip=' + request.GET['ip'], timeout=2)
+        except:
+            continue
+
+        # 비정상 IP 입력시 ${sIDC}-php-iapi의 결과는 "Please give me a valid IP Address\n"
+        if r.text[:-1] == "Please give me a valid IP Address":
+            continue
+
+        try:
+            for el in json.loads(r.text):
+                l4_dict[el] = json.loads(r.text)[el]
+        except:
+            continue
+
+        if l4_dict != {} or len(l4_dict.keys()) != 0:
+            return HttpResponse(json.dumps({"data": l4_dict, "status": "200"}))
+        else:
+            return HttpResponse(json.dumps({"data": "None", "status": "404"}))
+
+
+    return HttpResponse(json.dumps({"data": "정상적인 IP를 입력해주세요.", "status": "500"}))
 
 
 @login_required(login_url='/login')
