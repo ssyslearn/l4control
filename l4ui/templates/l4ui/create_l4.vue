@@ -19,7 +19,57 @@
                 <p> ${ input_vip } </p>
             </div>
             <div class="col-md-4" >
-                <button v-on:click="assign" class="btn btn-lg btn-info" >IP 할당</button>
+                <!--<button id="show-modal" @click="showModal = true" v-on:click="assign" class="btn btn-lg btn-info" >IP 할당</button>-->
+                <button id="show-modal" @click="showModal = true" class="btn btn-lg btn-info" >IP 할당</button>
+                  <!-- use the modal component, pass in the prop -->
+                  <modal v-if="showModal" v-on:close="set_vip()">
+                    <!--
+                      you can use custom content here to overwrite
+                      default content
+                    -->
+                      <!--<input type="text" placeholder="Real IP" required="" class="form-control input-lg">-->
+                      <!--<button v-on:click="assign" class="btn btn-lg btn-info" >IP 할당</button>-->
+
+                      <h3 slot="header">Virtual IP 할당</h3>
+                      <div slot="body">
+                          <div style="text-align: center;">
+                            L4에 등록할 Real IP 혹은 사용할 Virutal IP를 입력해주세요
+                                <br><br>
+                            <input type="text" v-model="input_rip" placeholder="IP" required="" class="form-control input-lg" style="width: 30%; margin: 0 auto; display: inline;">
+                                <input id="search_btn" type="button" class="btn-lg btn-info" value="조회" v-on:click="click_search_btn"/>
+                            </div>
+                      </div>
+
+                      <div slot="footer">
+                          <div class="row-mid">
+                    <div class="container">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Virtual Name</th>
+                                <th>Virtual IP</th>
+                                <th>Port</th>
+                                <th>Pool Name</th>
+                                <th>Pool Member</th>
+                                <th>LB Mode</th>
+                                <th>Sticky</th>
+                                <th>translate<br>Address</th>
+                                <th>Monitor</th>
+                                <th>선택</th>
+                            </tr>
+                            </thead>
+                            <tbody is="lb-table-box" v-bind:vs_list="vs_list">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <button class="modal-default-button" @click="set_vip()">
+                    OK
+                </button>
+                      </div>
+
+                  </modal>
             </div>
         </div>
 
@@ -59,11 +109,44 @@
     </div>
 </div>
 
+
+
 <script src="/static/js/jquery/1.11.3/jquery.min.js"></script>
 <script src="/static/js/jquery.redirect.js"></script>
 <link href="/static/css/l4style.css" rel="stylesheet" type="text/css">
+<link href="/static/css/modal.css" rel="stylesheet" type="text/css">
 <script src="/static/js/vue.js"></script>
 <script src="/static/js/axios.min.js"></script>
+
+<script type="text/x-template" id="modal-template">
+  <transition name="modal">
+    <div id="" class="modal-mask">
+      <div class="modal-wrapper">
+        <div class="modal-container">
+
+          <div class="modal-header">
+            <slot name="header">
+
+            </slot>
+          </div>
+
+          <div class="modal-body">
+            <slot name="body">
+
+            </slot>
+          </div>
+
+          <div class="modal-footer">
+            <slot name="footer">
+
+            </slot>
+          </div>
+        </div>
+      </div>
+    </div>
+  </transition>
+</script>
+
 
 <script>
     Vue.options.delimiters = ['${', '}'];
@@ -84,8 +167,76 @@
         writable: false,
         display_seen : false,
         confirm_btn_seen: false,
-        create_btn_seen: false
+        create_btn_seen: false,
+        showModal: false,
+        input_rip : '',
+        vs_list : ''
     }
+
+    Vue.component('modal', {
+        template: '#modal-template'
+    })
+
+
+    Vue.component('lb-table-box', {
+        props: ['vs_list'],
+        data: function() {
+            return {
+                checkedNames: []
+            }
+        },
+        methods: {
+            set_color: function(state) {
+                if (state == 'down'){
+                    return 'red';
+                }
+                else if(state == 'up'){
+                    return 'green';
+                }
+            }
+        },
+        template:
+            '<tbody>' +
+            '<tr v-for="(value, key, index) in vs_list">' +
+            '<td>' +
+            //'${ this.vs_list[Object.keys(vs)[index]]["name"] }' +
+            '${ value.name }' +
+            '</td>' +
+            '<td>' +
+            '${ key.split(":")[0].split("/")[2] }' +
+            '</td>' +
+            '<td>' +
+            '${ key.split(":")[1] }' +
+            '</td>' +
+            '<td>' +
+            '${ value.pool_name.split("/")[2] }' +
+            '</td>' +
+            '<td>' +
+            '<p v-for="(mem_value, mem_key, mem_index) in value.members">' +
+            '<span v-bind:style="{ color: set_color(mem_value.state)}">' +
+            '${ mem_key.split("/")[2] }' + ' ' +
+            '[${ mem_value.state }]' +
+            '</span>' +
+            '</p>' +
+            '</td>' +
+            '<td>' +
+            '${ value.loadBalancingMode }' +
+            '</td>' +
+            '<td>' +
+            '${ value.Persist }' +
+            '</td>' +
+            '<td>' +
+            '개발 예정' +
+            '</td>' +
+            '<td>' +
+            '${ value.monitor.split("/")[2] }' +
+            '</td>' +
+            '<td>' +
+            '<input type="checkbox" v-bind:id="`${ key.split(\':\')[0].split(\'/\')[2] }`" v-bind:value="`${ key.split(\':\')[0].split(\'/\')[2] }`" v-model="checkedNames">' +
+            '</td>' +
+            '</tr>' +
+            '</tbody>'
+    })
 
     var assign_vip = new Vue({
         el: '#assign_vip',
@@ -124,6 +275,31 @@
             },
             set_matched_dev: function(arg){
                 this.matched_dev = arg;
+            },
+            click_search_btn : function(){
+                var self = this;
+                axios.get('/search_l4check', {
+                    params: {
+                        ip: this.input_rip
+                    }
+                })
+                .then(function (response) {
+                    if (response.data.status == "200"){
+                        console.log(response.data.data);
+                        self.vs_list = response.data.data;
+                    }
+                    else{
+                        console.log(response.data.data);
+                        self.vs_list = {};
+                    }
+                })
+                .catch(function (error) {
+                    alert(error);
+                });
+            },
+            set_vip: function(){
+                this.showModal = false;
+                this.input_vip = this.$children[0].$children[0].checkedNames[0];
             }
         }
     })
@@ -182,11 +358,11 @@
         '</div> ' +
         '<div class="col-md-12-inner">' +
         '<label class="label-subtitle">SSL 인증서 사용 여부 </label><br>' +
-        '<input :disabled="writable == false" v-on:change="changed" type="radio" id="ssl_yes" value="사용" v-model="ssl" /> ' +
+        '<input :disabled="writable == false" v-on:change="changed" type="radio" id="ssl_yes" value="Yes" v-model="ssl" /> ' +
         '<label for="ssl_yes">Yes</label> ' +
         '<input :disabled="writable == false" v-on:change="changed" type="radio" id="ssl_no" value="No" v-model="ssl" /> ' +
         '<label for="ssl_no">No</label> ' +
-        '<button v-on:click="ssl_upload" class="btn btn-sm btn-info" :disabled="ssl != \'사용\'">SSL 인증서 업로드</button>' +
+        '<button v-on:click="ssl_upload" class="btn btn-sm btn-info" :disabled="ssl != \'Yes\'">SSL 인증서 업로드</button>' +
         '</div>' +
         '</div>' +
         '</div> ' +

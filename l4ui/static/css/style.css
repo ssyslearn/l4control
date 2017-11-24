@@ -285,8 +285,9 @@ body {
 }
 @font-face {
     font-family: 'Glyphicons Halflings';
-    src: url(../fonts/glyphicons-halflings-regular.eot);
+    /*src: url(../fonts/glyphicons-halflings-regular.eot);
     src: url(../fonts/glyphicons-halflings-regular.eot?#iefix) format('embedded-opentype'), url(../fonts/glyphicons-halflings-regular.woff2) format('woff2'), url(../fonts/glyphicons-halflings-regular.woff) format('woff'), url(../fonts/glyphicons-halflings-regular.ttf) format('truetype'), url(../fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular) format('svg')
+    */
 }
 .glyphicon {
     position: relative;
@@ -5875,7 +5876,7 @@ button.close {
 }
 .modal-title {
     margin: 0;
-    line-height: 1.42857143
+    line-height: 1.42857143er
 }
 .modal-body {
     position: relative;
@@ -5883,7 +5884,7 @@ button.close {
 }
 .modal-footer {
     padding: 15px;
-    text-align: right;
+    /*text-align: right;*/
     border-top: 1px solid #e5e5e5
 }
 .modal-footer .btn+.btn {
@@ -6468,9 +6469,13 @@ button.close {
 .sb-page-header .container {
     position: relative
 }
+
+/*
 @-ms-viewport {
-    width: device-width
+    width: device-width;
 }
+*/
+
 @media (max-width: 767px) {
     .visible-xs {
         display: block!important
@@ -7126,3 +7131,4 @@ footer .footer-right {
 }
 
 @import url("//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css");
+

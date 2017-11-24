@@ -1,7 +1,7 @@
 {% extends 'l4ui/base.html' %}
 {% block content %}
 <div class="container">
-    <div class="row home-intro text-center">
+    <div class="row-mid text-center">
 
         <h2 class="tagline">L4 변경/삭제</h2>
         <hr class="small">
@@ -14,7 +14,7 @@
 
             <br><br>
 
-            <div class="row">
+            <div class="row-mid">
                 <div class="container">
                         <table class="table table-striped">
                             <thead>
@@ -45,6 +45,7 @@
 <script src="/static/js/jquery/1.11.3/jquery.min.js"></script>
 <script src="/static/js/jquery.redirect.js"></script>
 <link href="/static/css/l4style.css" rel="stylesheet" type="text/css">
+<link href="/static/css/modal.css" rel="stylesheet" type="text/css">
 <script src="/static/js/vue.js"></script>
 <script src="/static/js/axios.min.js"></script>
 
@@ -52,65 +53,77 @@
     Vue.options.delimiters = ['${', '}'];
     axios.defaults.baseURL = 'http://127.0.0.1';
 
+    Vue.component('modal', {
+        template: '#modal-template'
+    })
+
     Vue.component('lb-table-box', {
         props: ['vs_list'],
         data: function() {
             return {
-                classObject: {
-                    color: 'red'
+
+            }
+        },
+        methods: {
+            set_color: function(state) {
+                if (state == 'down'){
+                    return 'red';
+                }
+                else if(state == 'up'){
+                    return 'green';
                 }
             }
         },
-//        methods: {
-//
-//        },
         template:
-        '<tbody>' +
-        '<tr v-for="(value, key, index) in vs_list">' +
-        '<td>' +
-        //'${ this.vs_list[Object.keys(vs)[index]]["name"] }' +
-        '${ value.name }' +
-        '</td>' +
-        '<td>' +
-        '${ key.split(":")[0].split("/")[2] }' +
-        '</td>' +
-        '<td>' +
-        '${ key.split(":")[1] }' +
-        '</td>' +
-        '<td>' +
-        '${ value.pool_name.split("/")[2] }' +
-        '</td>' +
-        '<td>' +
-        '<div v-for="(mem_value, mem_key, mem_index) in value.members">' +
-        '${ mem_key.split("/")[2] }' + ' ' +
-        '<span v-bind:style="classObject">' +
-        '[${ mem_value.state }]' +
-        '</span>' +
-        '</div>' +
-        '</td>' +
-        '<td>' +
-        '${ value.loadBalancingMode }' +
-        '</td>' +
-        '<td>' +
-        '${ value.Persist }' +
-        '</td>' +
-        '<td>' +
-        '개발 예정' +
-        '</td>' +
-        '<td>' +
-        '${ value.monitor.split("/")[2] }' +
-        '</td>' +
-        '<button v-if="" class="btn btn-success" v-on:click="">변경</button>'+
-        '<button v-if="" class="btn btn-danger" v-on:click="">삭제</button>'+
-        '</tr>' +
-        '</tbody>'
+            '<tbody>' +
+            '<tr v-for="(value, key, index) in vs_list">' +
+            '<td>' +
+            //'${ this.vs_list[Object.keys(vs)[index]]["name"] }' +
+            '${ value.name }' +
+            '</td>' +
+            '<td>' +
+            '${ key.split(":")[0].split("/")[2] }' +
+            '</td>' +
+            '<td>' +
+            '${ key.split(":")[1] }' +
+            '</td>' +
+            '<td>' +
+            '${ value.pool_name.split("/")[2] }' +
+            '</td>' +
+            '<td>' +
+            '<p v-for="(mem_value, mem_key, mem_index) in value.members">' +
+            '<span v-bind:style="{ color: set_color(mem_value.state)}">' +
+            '${ mem_key.split("/")[2] }' + ' ' +
+            '[${ mem_value.state }]' +
+            '</span>' +
+            '</p>' +
+            '</td>' +
+            '<td>' +
+            '${ value.loadBalancingMode }' +
+            '</td>' +
+            '<td>' +
+            '${ value.Persist }' +
+            '</td>' +
+            '<td>' +
+            '개발 예정' +
+            '</td>' +
+            '<td>' +
+            '${ value.monitor.split("/")[2] }' +
+            '</td>' +
+                '<td>' +
+            '<button v-if="" class="btn btn-success" v-on:click="">변경</button>'+
+            '<button v-if="" class="btn btn-danger" v-on:click="">삭제</button>'+
+                '</td>' +
+            '</tr>' +
+            '</tbody>'
     })
 
     var lb_table = new Vue({
         el: '#lb_table',
         data: {
             input_ip : '',
-            vs_list : ''
+            vs_list : '',
+            showModal: false
         },
         methods: {
             click_search_btn : function(){
@@ -124,6 +137,10 @@
                     if (response.data.status == "200"){
                         console.log(response.data.data);
                         self.vs_list = response.data.data;
+                    }
+                    else{
+                        console.log(response.data.data);
+                        self.vs_list = {};
                     }
                 })
                 .catch(function (error) {
