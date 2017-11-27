@@ -20,7 +20,7 @@
             </div>
             <div class="col-md-4" >
                 <!--<button id="show-modal" @click="showModal = true" v-on:click="assign" class="btn btn-lg btn-info" >IP 할당</button>-->
-                <button id="show-modal" @click="showModal = true" class="btn btn-lg btn-info" >IP 할당</button>
+                <button id="show-modal" @click="assign" class="btn btn-lg btn-info" >IP 할당</button>
                   <!-- use the modal component, pass in the prop -->
                   <modal v-if="showModal" v-on:close="set_vip()">
                     <!--
@@ -37,36 +37,37 @@
                                 <br><br>
                             <input type="text" v-model="input_rip" placeholder="IP" required="" class="form-control input-lg" style="width: 30%; margin: 0 auto; display: inline;">
                                 <input id="search_btn" type="button" class="btn-lg btn-info" value="조회" v-on:click="click_search_btn"/>
+                          </div>
+
+                           <div class="row-mid">
+                            <div class="container">
+                                <img v-show="loading" class="fa fa-spinner fa-spin" src="/static/img/ajax-loader.gif" style=""/>
+                                <table v-show="loaded"  class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th>Virtual Name</th>
+                                        <th>Virtual IP</th>
+                                        <th>Port</th>
+                                        <th>Pool Name</th>
+                                        <th>Pool Member</th>
+                                        <th>LB Mode</th>
+                                        <th>Sticky</th>
+                                        <th>translate<br>Address</th>
+                                        <th>Monitor</th>
+                                        <th>선택</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody is="lb-table-box" v-bind:vs_list="vs_list" v-bind:usable_vip="usable_vip">
+                                    </tbody>
+                                </table>
                             </div>
+                          </div>
                       </div>
 
                       <div slot="footer">
-                          <div class="row-mid">
-                    <div class="container">
-                        <table class="table table-striped">
-                            <thead>
-                            <tr>
-                                <th>Virtual Name</th>
-                                <th>Virtual IP</th>
-                                <th>Port</th>
-                                <th>Pool Name</th>
-                                <th>Pool Member</th>
-                                <th>LB Mode</th>
-                                <th>Sticky</th>
-                                <th>translate<br>Address</th>
-                                <th>Monitor</th>
-                                <th>선택</th>
-                            </tr>
-                            </thead>
-                            <tbody is="lb-table-box" v-bind:vs_list="vs_list">
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <button class="modal-default-button" @click="set_vip()">
-                    OK
-                </button>
+                        <button class="modal-default-button" @click="set_vip()">
+                            OK
+                        </button>
                       </div>
 
                   </modal>
@@ -169,8 +170,12 @@
         confirm_btn_seen: false,
         create_btn_seen: false,
         showModal: false,
+        loading: false,
+        loaded: false,
         input_rip : '',
-        vs_list : ''
+        tmp_vip: '',
+        vs_list : '',
+        usable_vip : ''
     }
 
     Vue.component('modal', {
@@ -179,10 +184,10 @@
 
 
     Vue.component('lb-table-box', {
-        props: ['vs_list'],
+        props: ['vs_list', 'usable_vip'],
         data: function() {
             return {
-                checkedNames: []
+                picked_vip: ''
             }
         },
         methods: {
@@ -232,8 +237,12 @@
             '${ value.monitor.split("/")[2] }' +
             '</td>' +
             '<td>' +
-            '<input type="checkbox" v-bind:id="`${ key.split(\':\')[0].split(\'/\')[2] }`" v-bind:value="`${ key.split(\':\')[0].split(\'/\')[2] }`" v-model="checkedNames">' +
+            '<input type="radio" v-bind:id="`${ key.split(\':\')[0].split(\'/\')[2] }`" v-bind:value="`${ key.split(\':\')[0].split(\'/\')[2] }`" v-model="picked_vip">' +
             '</td>' +
+            '</tr>' +
+            '<tr>' +
+            '<td>신규 VIP 발급</td><td>${ usable_vip }</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>' +
+            '<td><input type="radio" v-bind:id="`${ usable_vip }`" v-bind:value="`${ usable_vip }`" v-model="picked_vip"></td>' +
             '</tr>' +
             '</tbody>'
     })
@@ -243,63 +252,128 @@
         data: data,
         methods: {
             assign: function (event) {
-                axios.get('/verify_vip', {
-                    params: {
-                        ip: this.input_vip
-                    }
-                })
-                .then(function (response) {
-                    alert(response.data.data);
-                    if (response.data.status == "200"){
-                        virtual_server.writable_true();
-                    }
-                    else{
-                        virtual_server.writable_false();
-                    }
-                })
-                .catch(function (error) {
-                    alert(error);
-                });
-
-                axios.get('/l4map', {
-                    params: {
-                        ip: this.input_vip
-                    }
-                })
-                .then(function (response) {
-                    assign_vip.set_matched_dev(response.data);
-                })
-                .catch(function (error) {
-                    alert(error);
-                });
+                if(this.input_vip ==''){
+                    this.showModal = true;
+                }
+                else{
+                    this.showModal = true;
+                    this.input_rip = this.input_vip;
+                    this.click_search_btn();
+                }
             },
             set_matched_dev: function(arg){
                 this.matched_dev = arg;
             },
             click_search_btn : function(){
                 var self = this;
+                self.loaded = false;
+                self.loading = true;
+
                 axios.get('/search_l4check', {
                     params: {
                         ip: this.input_rip
                     }
                 })
                 .then(function (response) {
+//                    self.loading = false;
+//                    self.loaded = true;
                     if (response.data.status == "200"){
                         console.log(response.data.data);
                         self.vs_list = response.data.data;
+
+
+                        if (Object.keys(response.data.data).length === 0) {
+                            // VIP나 RIP 둘다 없을 때는...?
+                            alert("Virtual IP, Real IP 모두 검색되지 않음. Virtual IP 일 경우 사용 가능");
+                            axios.get('/search_usable_vip', {
+                                params: {
+                                    vip: self.input_rip
+                                }
+                            })
+                            .then(function (response) {
+                                self.loading = false;
+                                self.loaded = true;
+                                if (response.data.status == "200") {
+                                    console.log(response.data.data);
+                                    self.usable_vip = response.data.data;
+                                }
+                                else {
+                                    console.log(response.data.data);
+                                    self.usable_vip = '';
+                                    self.input_rip = '';
+                                    alert(response.data.data);
+                                }
+                            })
+                            .catch(function (error) {
+                                alert(error);
+                            });
+                        }
+                        else{
+                            self.tmp_vip = Object.keys(self.vs_list)[0].split(':')[0].split('/')[2];
+
+                            axios.get('/search_usable_vip', {
+                                params: {
+                                    vip: self.tmp_vip
+                                }
+                            })
+                            .then(function (response) {
+                                self.loading = false;
+                                self.loaded = true;
+                                if (response.data.status == "200") {
+                                    console.log(response.data.data);
+                                    self.usable_vip = response.data.data;
+                                }
+                                else {
+                                    console.log(response.data.data);
+                                    self.usable_vip = '';
+                                    self.input_rip = '';
+                                    alert(response.data.data);
+                                }
+                            })
+                            .catch(function (error) {
+                                alert(error);
+                            });
+                        }
                     }
                     else{
+                        self.loading = false;
+                        self.loaded = true;
                         console.log(response.data.data);
-                        self.vs_list = {};
+                        alert(response.data.data);
+//                        self.vs_list = {};
                     }
                 })
                 .catch(function (error) {
+                    self.loading = false;
+                    self.loaded = true;
                     alert(error);
                 });
             },
             set_vip: function(){
                 this.showModal = false;
-                this.input_vip = this.$children[0].$children[0].checkedNames[0];
+//                if (this.$children[0].$children[0].picked_vip == undefined){
+                if (this.$children[0].$children[0].picked_vip == ''){
+                    this.input_vip = '';
+                    this.input_rip = '';
+                    this.usable_vip = '';
+                }
+                else{
+                    this.input_vip = this.$children[0].$children[0].picked_vip;
+                     axios.get('/search_matched_dev', {
+                        params: {
+                            vip: this.input_vip
+                        }
+                    })
+                    .then(function (response) {
+                        assign_vip.set_matched_dev(response.data);
+                    })
+                    .catch(function (error) {
+                        alert(error);
+                    });
+                    virtual_server.writable_true();
+                }
+
+//                virtual_server.writable_true();
             }
         }
     })
