@@ -124,22 +124,16 @@
     <div id="" class="modal-mask">
       <div class="modal-wrapper">
         <div class="modal-container">
-
           <div class="modal-header">
             <slot name="header">
-
             </slot>
           </div>
-
           <div class="modal-body">
             <slot name="body">
-
             </slot>
           </div>
-
           <div class="modal-footer">
             <slot name="footer">
-
             </slot>
           </div>
         </div>
@@ -173,7 +167,6 @@
         loading: false,
         loaded: false,
         input_rip : '',
-        tmp_vip: '',
         vs_list : '',
         usable_vip : ''
     }
@@ -253,9 +246,13 @@
         methods: {
             assign: function (event) {
                 if(this.input_vip ==''){
+                    this.vs_list = '';
+                    this.loaded = false;
                     this.showModal = true;
                 }
                 else{
+                    this.vs_list = '';
+                    this.loaded = false;
                     this.showModal = true;
                     this.input_rip = this.input_vip;
                     this.click_search_btn();
@@ -280,60 +277,43 @@
                     if (response.data.status == "200"){
                         console.log(response.data.data);
                         self.vs_list = response.data.data;
+                        var tmp_vip = '';
 
 
                         if (Object.keys(response.data.data).length === 0) {
                             // VIP나 RIP 둘다 없을 때는...?
                             alert("Virtual IP, Real IP 모두 검색되지 않음. Virtual IP 일 경우 사용 가능");
-                            axios.get('/search_usable_vip', {
-                                params: {
-                                    vip: self.input_rip
-                                }
-                            })
-                            .then(function (response) {
-                                self.loading = false;
-                                self.loaded = true;
-                                if (response.data.status == "200") {
-                                    console.log(response.data.data);
-                                    self.usable_vip = response.data.data;
-                                }
-                                else {
-                                    console.log(response.data.data);
-                                    self.usable_vip = '';
-                                    self.input_rip = '';
-                                    alert(response.data.data);
-                                }
-                            })
-                            .catch(function (error) {
-                                alert(error);
-                            });
+
+                            // VIP라는 가정하에 진행. search_usable_vip에서 vip만 보기 때문에 RIP일 경우는 무시
+                            tmp_vip = self.input_rip;
                         }
                         else{
-                            self.tmp_vip = Object.keys(self.vs_list)[0].split(':')[0].split('/')[2];
-
-                            axios.get('/search_usable_vip', {
-                                params: {
-                                    vip: self.tmp_vip
-                                }
-                            })
-                            .then(function (response) {
-                                self.loading = false;
-                                self.loaded = true;
-                                if (response.data.status == "200") {
-                                    console.log(response.data.data);
-                                    self.usable_vip = response.data.data;
-                                }
-                                else {
-                                    console.log(response.data.data);
-                                    self.usable_vip = '';
-                                    self.input_rip = '';
-                                    alert(response.data.data);
-                                }
-                            })
-                            .catch(function (error) {
-                                alert(error);
-                            });
+                            tmp_vip = Object.keys(self.vs_list)[0].split(':')[0].split('/')[2];
                         }
+
+                        axios.get('/search_usable_vip', {
+                            params: {
+                                vip: tmp_vip
+                            }
+                        })
+                        .then(function (response) {
+                            self.loading = false;
+                            self.loaded = true;
+                            if (response.data.status == "200") {
+                                console.log(response.data.data);
+                                self.usable_vip = response.data.data;
+                            }
+                            else {
+                                console.log(response.data.data);
+                                self.usable_vip = '';
+                                self.input_rip = '';
+                                alert(response.data.data);
+                            }
+                        })
+                        .catch(function (error) {
+                            alert(error);
+                        });
+
                     }
                     else{
                         self.loading = false;
@@ -546,25 +526,8 @@
                         this.virtual_port_list[i]['real_count'] = return_ip_list.length;
                     }
                 }
-
-//                axios.get('/l4map', {
-//                    params: {
-//                        ip: this.input_vip
-//                    }
-//                })
-//                .then(function (response) {
-//                    //console.log(response.data);
-//                    //alert(response.data);
-//                })
-//                .catch(function (error) {
-//                    alert(error);
-//                });
                 this.create_btn_seen = true;
-
             }
-        },
-        created: function(){
-            //this.data['seen'] = false;
         }
     })
 </script>
