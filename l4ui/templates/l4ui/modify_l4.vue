@@ -9,31 +9,32 @@
 
         <div id="lb_table">
             <label>Virtual IP 또는 Real IP를 입력하세요 : </label>
-            <input v-model="input_ip" type="text"/>
+            <input v-model="input_ip" value="{{ ip }}" type="text"/>
             <input id="search_btn" type="button" class="btn btn-info" value="조회" v-on:click="click_search_btn"/>
 
             <br><br>
 
             <div class="row-mid">
                 <div class="container">
-                        <table class="table table-striped">
-                            <thead>
-                            <tr>
-                                <th>Virtual Name</th>
-                                <th>Virtual IP</th>
-                                <th>Port</th>
-                                <th>Pool Name</th>
-                                <th>Pool Member</th>
-                                <th>LB Mode</th>
-                                <th>Sticky</th>
-                                <th>translate<br>Address</th>
-                                <th>Monitor</th>
-                                <th>작업</th>
-                            </tr>
-                            </thead>
-                            <tbody is="lb-table-box" v-bind:vs_list="vs_list">
-                            </tbody>
-                        </table>
+                    <img v-show="loading" class="fa fa-spinner fa-spin" src="/static/img/ajax-loader.gif" style=""/>
+                    <table v-show="loaded"  class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>Virtual Name</th>
+                            <th>Virtual IP</th>
+                            <th>Port</th>
+                            <th>Pool Name</th>
+                            <th>Pool Member</th>
+                            <th>LB Mode</th>
+                            <th>Sticky</th>
+                            <th>translate<br>Address</th>
+                            <th>Monitor</th>
+                            <th>작업</th>
+                        </tr>
+                        </thead>
+                        <tbody is="lb-table-box" v-bind:vs_list="vs_list">
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -123,29 +124,42 @@
         data: {
             input_ip : '',
             vs_list : '',
-            showModal: false
+            showModal: false,
+            loading: false,
+            loaded: false
         },
         methods: {
             click_search_btn : function(){
                 var self = this;
+                self.loading = true;
+                self.loaded = false;
+
                 axios.get('/search_l4check', {
                     params: {
                         ip: this.input_ip
                     }
                 })
                 .then(function (response) {
+                    self.loading = false;
+                    self.loaded = true;
                     if (response.data.status == "200"){
                         console.log(response.data.data);
                         self.vs_list = response.data.data;
                     }
                     else{
                         console.log(response.data.data);
+                        alert(response.data.data);
                         self.vs_list = {};
                     }
                 })
                 .catch(function (error) {
                     alert(error);
                 });
+            }
+        },
+        mounted: function() {
+            if (this.input_ip != ""){
+                this.click_search_btn();
             }
         }
     })

@@ -41,14 +41,15 @@
                         {% if user.is_authenticated %}
                             <a href="/logout"><i class="icon-pencil fa-fw"></i> logout</a>
                             <!--<a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">{{ session.id }} <b class="caret"></b></a>-->
+{#                            <p>{{ user.username }}</p>#}
                         {% else %}
 		                    <a href="{% url 'login' %}"> login </a>
                         {% endif %}
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a href="/logout"><i class="icon-pencil fa-fw"></i> logout</a>
-                            </li>
-                        </ul>
+{#                        <ul class="dropdown-menu">#}
+{#                            <li>#}
+{#                                <a href="/logout"><i class="icon-pencil fa-fw"></i> logout</a>#}
+{#                            </li>#}
+{#                        </ul>#}
                 </li>
             </ul>
         </div>

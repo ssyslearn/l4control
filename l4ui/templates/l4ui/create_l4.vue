@@ -77,10 +77,10 @@
         <div id="virtual_server">
             <div>
                 <div class="col-md-12">
-                    <label class="label-title">서비스 명</label>
+                    <label class="label-title">서버 명(호스트네임)</label>
                 </div>
                 <div class="col-md-8">
-                    <input :disabled="writable == false" v-model="input_service_name" type="text"  placeholder="서비스명을 입력하세요" required="" class="form-control input-lg" >
+                    <input :disabled="writable == false" v-model="input_service_name" type="text"  placeholder="ex. vfrontwb" required="" class="form-control input-lg" >
                     <!--<span class="label-svctitle" v-for="index in vs_count" v-model="virtual_port[0]">-->
                     <span class="label-svctitle" v-for="index in virtual_port_list">
                           <!--v_${ input_vip }_${ input_service_name }_${ port },-->
@@ -146,6 +146,11 @@
 <script>
     Vue.options.delimiters = ['${', '}'];
     axios.defaults.baseURL = 'http://127.0.0.1';
+
+    function checkIPv4(ip){
+        good = /^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$/
+        return good.test(ip)
+    }
 
     var config = {
         headers: {
@@ -346,11 +351,13 @@
                     })
                     .then(function (response) {
                         assign_vip.set_matched_dev(response.data);
+
+                        // vip가 선택되고 L4 dev까지 맵핑될 경우 writable_true
+                        virtual_server.writable_true();
                     })
                     .catch(function (error) {
                         alert(error);
                     });
-                    virtual_server.writable_true();
                 }
 
 //                virtual_server.writable_true();
@@ -514,11 +521,27 @@
                                     break;
                                 }
                                 for (var j = 0; j < ip_list[ip].split("~")[1] - ip_list[ip].split("~")[0].split(".")[3] + 1; j++) {
-                                    return_ip_list.push((prefix_ip + String(Number(ip_list[ip].split("~")[0].split(".")[3]) + Number(j))).trim());
+                                    if(checkIPv4((prefix_ip + String(Number(ip_list[ip].split("~")[0].split(".")[3]) + Number(j))).trim())){
+                                        return_ip_list.push((prefix_ip + String(Number(ip_list[ip].split("~")[0].split(".")[3]) + Number(j))).trim());
+                                    }
+                                    else{
+                                        alert("IPv4에 만족하는 IP가 아닙니다.");
+                                        this.display_seen = false;
+                                        this.create_btn_seen = false;
+                                        return false;
+                                    }
                                 }
                             }
                             else {
-                                return_ip_list.push(ip_list[ip].trim());
+                                if(checkIPv4(ip_list[ip].trim())){
+                                    return_ip_list.push(ip_list[ip].trim());
+                                }
+                                else{
+                                        alert("IPv4에 만족하는 IP가 아닙니다.");
+                                        this.display_seen = false;
+                                        this.create_btn_seen = false;
+                                        return false;
+                                }
                             }
                         }
                         console.log(return_ip_list);

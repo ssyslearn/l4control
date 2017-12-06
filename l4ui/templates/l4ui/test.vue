@@ -10,6 +10,7 @@
 
 <div id="app">
     <p v-text="message"></p>
+    {{ user.username }}
 </div>
 
 <div id="app2">
@@ -149,6 +150,24 @@
         data: data
     })
 
+
+    axios.get('/verify_vip', {
+                    params: {
+                        ip: this.input_vip
+                    }
+                })
+                .then(function (response) {
+                    alert(response.data.data);
+                    if (response.data.status == "200"){
+                        virtual_server.writable_true();
+                    }
+                    else{
+                        virtual_server.writable_false();
+                    }
+                })
+                .catch(function (error) {
+                    alert(error);
+                });
 </script>
 </body>
 </html>
