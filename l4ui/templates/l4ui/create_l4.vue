@@ -202,7 +202,6 @@
             '<tbody>' +
             '<tr v-for="(value, key, index) in vs_list">' +
             '<td>' +
-            //'${ this.vs_list[Object.keys(vs)[index]]["name"] }' +
             '${ value.name }' +
             '</td>' +
             '<td>' +
@@ -235,12 +234,32 @@
             '${ value.monitor.split("/")[2] }' +
             '</td>' +
             '<td>' +
-            '<input type="radio" v-bind:id="`${ key.split(\':\')[0].split(\'/\')[2] }`" v-bind:value="`${ key.split(\':\')[0].split(\'/\')[2] }`" v-model="picked_vip">' +
+            '<input type="radio" v-bind:id="key.split(\':\')[0].split(\'/\')[2]" v-bind:value="key.split(\':\')[0].split(\'/\')[2]" v-model="picked_vip">' +
             '</td>' +
             '</tr>' +
             '<tr>' +
             '<td>신규 VIP 발급</td><td>${ usable_vip }</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>' +
-            '<td><input type="radio" v-bind:id="`${ usable_vip }`" v-bind:value="`${ usable_vip }`" v-model="picked_vip"></td>' +
+            '<td><input type="radio" v-bind:id="usable_vip" v-bind:value="usable_vip" v-model="picked_vip"></td>' +
+            '</tr>' +
+            '</tbody>'
+    })
+
+
+    Vue.component('newlb-table-box', {
+        props: ['vs_list', 'usable_vip'],
+        data: function() {
+            return {
+                picked_vip: ''
+            }
+        },
+        methods: {
+
+        },
+        template:
+            '<tbody>' +
+            '<tr>' +
+            '<td>신규 VIP 발급</td><td>${ usable_vip }</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>' +
+            '<td><input type="radio" v-bind:id="usable_vip" v-bind:value="usable_vip" v-model="picked_vip"></td>' +
             '</tr>' +
             '</tbody>'
     })
@@ -290,6 +309,7 @@
                             alert("Virtual IP, Real IP 모두 검색되지 않음. Virtual IP 일 경우 사용 가능");
 
                             // VIP라는 가정하에 진행. search_usable_vip에서 vip만 보기 때문에 RIP일 경우는 무시
+                            // 만약 RIP를 입력한 경우 230 전이면 retrun false 등의 조치가 필요해보임
                             tmp_vip = self.input_rip;
                         }
                         else{

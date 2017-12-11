@@ -171,7 +171,7 @@ def search_usable_vip(request):
             else:
                 #print selected_dev
                 #return HttpResponse(json.dumps(usable_vip))
-                return HttpResponse(json.dumps({"data": "올바른 대역의 Virutal IP를 입력해주세요.", "status": "404"}))
+                return HttpResponse(json.dumps({"data": "올바른 대역의 Virtual IP를 입력해주세요.", "status": "404"}))
         except:
             continue
 
