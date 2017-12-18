@@ -45,6 +45,7 @@
                                 <table v-show="loaded"  class="table table-striped">
                                     <thead>
                                     <tr>
+                                        <th>종류</th>
                                         <th>Virtual Name</th>
                                         <th>Virtual IP</th>
                                         <th>Port</th>
@@ -201,6 +202,7 @@
         template:
             '<tbody>' +
             '<tr v-for="(value, key, index) in vs_list">' +
+            '<td> 기존 VIP </td>' +
             '<td>' +
             '${ value.name }' +
             '</td>' +
@@ -238,7 +240,7 @@
             '</td>' +
             '</tr>' +
             '<tr>' +
-            '<td>신규 VIP 발급</td><td>${ usable_vip }</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>' +
+            '<td>신규 VIP 발급</td><td>${ usable_vip }</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>' +
             '<td><input type="radio" v-bind:id="usable_vip" v-bind:value="usable_vip" v-model="picked_vip"></td>' +
             '</tr>' +
             '</tbody>'
