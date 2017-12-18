@@ -7,8 +7,7 @@ from django.http import HttpResponse
 
 # Create your views here.
 
-L4_URL = ['http://c-php-iapi.skplanet.com/l4check/', 'http://b-php-iapi.skplanet.com/l4check/', 'http://i-php-iapi.skplanet.com/l4check/']
-#L4_URL = ['http://i-php-iapi.skplanet.com/l4check/']
+L4_URL = []
 
 @login_required(login_url='/login')
 def create_l4(request):
